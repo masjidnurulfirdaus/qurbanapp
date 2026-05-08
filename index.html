@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Qurban</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        qurban: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d', // Primary green from mockup
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Phosphor Icons (for beautiful UI icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-20">
+
+    <!-- Navbar/Header (Dynamic) -->
+    <header id="main-header" class="bg-white shadow-sm sticky top-0 z-40 transition-all duration-300">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Hamburger menu icon (optional) -->
+                <button id="menu-btn" class="p-1 rounded-md hover:bg-slate-100 transition-colors hidden">
+                    <i class="ph ph-list text-2xl text-slate-600"></i>
+                </button>
+                <h1 id="header-title" class="text-xl font-semibold text-qurban-800">Qurban Hub</h1>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Login/Logout Action -->
+                <button id="auth-btn" class="text-sm font-medium text-qurban-700 bg-qurban-50 px-3 py-1.5 rounded-full hover:bg-qurban-100 transition-colors">
+                    Login
+                </button>
+                
+                <!-- User Avatar (Mockup shows avatar) -->
+                <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border border-slate-300 hidden" id="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=15803d&color=fff" alt="User" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="w-full max-w-md mx-auto md:max-w-2xl lg:max-w-4xl transition-opacity duration-300">
+        <!-- Views will be injected here by app.js -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-2 pb-safe pt-1">
+        <div class="flex justify-around items-center max-w-md mx-auto md:max-w-2xl">
+            <button class="nav-item active flex flex-col items-center p-2 text-qurban-700 transition-colors" data-target="pengqurban">
+                <i class="ph ph-house text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Beranda</span>
+            </button>
+            <button class="nav-item flex flex-col items-center p-2 text-slate-400 hover:text-qurban-600 transition-colors" data-target="penerima">
+                <i class="ph ph-users-three text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Penerima</span>
+            </button>
+            <button class="nav-item flex flex-col items-center p-2 text-slate-400 hover:text-qurban-600 transition-colors" data-target="panitia">
+                <i class="ph ph-identification-badge text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Panitia</span>
+            </button>
+            <button class="nav-item flex flex-col items-center p-2 text-slate-400 hover:text-qurban-600 transition-colors" data-target="absensi">
+                <i class="ph ph-calendar-check text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Absensi</span>
+            </button>
+            <button class="nav-item flex flex-col items-center p-2 text-slate-400 hover:text-qurban-600 transition-colors" data-target="keuangan">
+                <i class="ph ph-wallet text-2xl mb-1"></i>
+                <span class="text-[10px] font-medium">Keuangan</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Global Toast Notification Container -->
+    <div id="toast-container" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-[90%] max-w-md pointer-events-none"></div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="login-modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-slate-800">Login Admin</h2>
+                    <button id="close-login-btn" class="text-slate-400 hover:text-slate-600">
+                        <i class="ph ph-x text-xl"></i>
+                    </button>
+                </div>
+                
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Username</label>
+                        <input type="text" id="login-username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 transition-colors outline-none" placeholder="Masukkan username">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                        <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 transition-colors outline-none" placeholder="Masukkan password">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-qurban-700 hover:bg-qurban-800 text-white font-medium py-2.5 rounded-xl transition-colors mt-2 flex items-center justify-center gap-2">
+                        <span>Masuk</span>
+                        <i class="ph ph-sign-in"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals Container (For dynamic forms) -->
+    <div id="dynamic-modal-container"></div>
+
+    <!-- Scripts -->
+    <script src="supabase.js"></script>
+    <script src="views_penerima.js"></script>
+    <script src="views_panitia.js"></script>
+    <script src="views_absensi.js"></script>
+    <script src="views_keuangan.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

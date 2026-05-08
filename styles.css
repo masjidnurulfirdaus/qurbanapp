@@ -1,0 +1,149 @@
+/* Base styles and custom animations */
+html, body {
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+
+/* Safe area padding for modern mobile browsers */
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+
+/* Custom Scrollbar for a cleaner look */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* View transitions */
+.view-enter {
+    animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.view-leave {
+    animation: fadeOut 0.2s ease-in forwards;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Toast animations */
+.toast-enter {
+    animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.toast-leave {
+    animation: fadeOutUp 0.3s ease-in forwards;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+@keyframes fadeOutUp {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+}
+
+/* Custom Checkbox/Toggle styles */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #15803d;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #15803d;
+}
+.toggle-checkbox {
+    right: 0;
+    z-index: 1;
+    border-color: #e2e8f0;
+    transition: all 0.3s;
+}
+.toggle-label {
+    width: 3rem;
+    height: 1.5rem;
+    background-color: #e2e8f0;
+    border-radius: 9999px;
+    transition: all 0.3s;
+}
+.toggle-dot {
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+.toggle-checkbox:checked ~ .toggle-dot {
+    transform: translateX(1.5rem);
+}
+
+/* Glassmorphism utility */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Modal animations */
+.modal-enter {
+    display: flex !important;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+.modal-enter > div {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
