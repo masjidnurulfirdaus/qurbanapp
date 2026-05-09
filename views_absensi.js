@@ -4,14 +4,20 @@
 async function buildAbsensiView() {
     const { data: panitias } = await window.api.panitia.select();
     
+    const totalHadir = panitias.filter(p => p.hadir).length;
+
+    // Filter state
+    const activeFilter = window.absensiFilter || 'Belum Hadir';
+    
+    // Apply filter
+    const displayedPanitias = activeFilter === 'Belum Hadir' ? panitias.filter(p => !p.hadir) : panitias;
+
     // Group panitia by Wilayah
     const byWilayah = {};
-    panitias.forEach(p => {
+    displayedPanitias.forEach(p => {
         if(!byWilayah[p.wilayah]) byWilayah[p.wilayah] = [];
         byWilayah[p.wilayah].push(p);
     });
-
-    const totalHadir = panitias.filter(p => p.hadir).length;
 
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
@@ -30,7 +36,24 @@ async function buildAbsensiView() {
                     <span class="text-xl font-bold">${Math.round((totalHadir/Math.max(1,panitias.length))*100)}%</span>
                 </div>
             </div>
+            
+            <!-- Filter UI -->
+            <div class="flex gap-2 bg-slate-100 p-1 rounded-xl">
+                <button class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${activeFilter === 'Semua' ? 'bg-white text-qurban-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'} btn-filter-absensi" data-filter="Semua">Semua</button>
+                <button class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${activeFilter === 'Belum Hadir' ? 'bg-white text-qurban-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'} btn-filter-absensi" data-filter="Belum Hadir">Belum Hadir</button>
+            </div>
     `;
+
+    if (displayedPanitias.length === 0) {
+        html += `
+            <div class="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm mt-6">
+                <div class="w-16 h-16 mx-auto bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
+                    <i class="ph ph-check-circle text-3xl"></i>
+                </div>
+                <p class="text-slate-500 font-medium">Semua panitia di wilayah ini sudah hadir.</p>
+            </div>
+        `;
+    }
 
     Object.keys(byWilayah).sort().forEach(wilayah => {
         const members = byWilayah[wilayah];
@@ -74,6 +97,13 @@ async function buildAbsensiView() {
 }
 
 function attachAbsensiListeners() {
+    document.querySelectorAll('.btn-filter-absensi').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            window.absensiFilter = e.target.dataset.filter;
+            renderView('absensi');
+        });
+    });
+
     document.querySelectorAll('.toggle-absensi').forEach(toggle => {
         toggle.addEventListener('change', async (e) => {
             const id = e.target.dataset.id;
