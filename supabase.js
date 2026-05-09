@@ -26,9 +26,9 @@ const mockData = {
         { id: '3', nama: 'Rizky Pratama', wilayah: 'RT 1 RW 7', alamat: '', no_telp: '085612345678', kelompok: 'Kambing', status_lunas: true, created_at: new Date().toISOString() }
     ],
     penerima: [
-        { id: '1', nama: 'Bapak Slamet', wilayah: 'RT 1 RW 6', alamat: 'Jl. Melati No. 12', jumlah: 1, no_telp: '', created_at: new Date().toISOString() },
-        { id: '2', nama: 'Ibu Wahyuni', wilayah: 'RT 1 RW 6', alamat: 'Jl. Mawar No. 45', jumlah: 1, no_telp: '', created_at: new Date().toISOString() },
-        { id: '3', nama: 'Pak RT Mulyono', wilayah: 'RT 2 RW 6', alamat: 'Kompleks Asri B-10', jumlah: 1, no_telp: '', created_at: new Date().toISOString() }
+        { id: '1', nama: 'Bapak Slamet', wilayah: 'RT 1 RW 6', alamat: 'Jl. Melati No. 12', jumlah: 1, no_telp: '', muslim: true, created_at: new Date().toISOString() },
+        { id: '2', nama: 'Ibu Wahyuni', wilayah: 'RT 1 RW 6', alamat: 'Jl. Mawar No. 45', jumlah: 1, no_telp: '', muslim: true, created_at: new Date().toISOString() },
+        { id: '3', nama: 'Pak RT Mulyono', wilayah: 'RT 2 RW 6', alamat: 'Kompleks Asri B-10', jumlah: 1, no_telp: '', muslim: true, created_at: new Date().toISOString() }
     ],
     panitia: [
         { id: '1', nama: 'Ahmad Yani', wilayah: 'RT 1 RW 6', tugas: ['Penyembelihan', 'Pengulitan'], is_koordinator: true, hadir: true, created_at: new Date().toISOString() },

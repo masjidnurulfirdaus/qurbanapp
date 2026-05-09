@@ -67,6 +67,7 @@ async function buildPenerimaView() {
                                 <h4 class="font-bold text-slate-800 flex items-center gap-2">
                                     ${p.nama}
                                     ${p.jumlah > 1 ? `<span class="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full">${p.jumlah} Porsi</span>` : ''}
+                                    ${p.muslim === false ? `<span class="bg-amber-50 text-amber-600 text-[10px] px-2 py-0.5 rounded-full border border-amber-100">Non-Muslim</span>` : ''}
                                 </h4>
                                 <p class="text-xs text-slate-500 mt-0.5"><i class="ph ph-map-pin text-slate-400"></i> ${p.alamat || p.wilayah}</p>
                             </div>
@@ -86,10 +87,11 @@ async function buildPenerimaView() {
 }
 
 const showFormPenerima = async (id = null) => {
-    let item = { nama: '', wilayah: window.penerimaFilter || WILAYAH_OPTIONS[0], alamat: '', jumlah: 1, no_telp: '' };
+    let item = { nama: '', wilayah: window.penerimaFilter || WILAYAH_OPTIONS[0], alamat: '', jumlah: 1, no_telp: '', muslim: true };
     if (id) {
         const { data } = await window.api.penerima.select();
         item = data.find(i => i.id === id);
+        if (item.muslim === undefined) item.muslim = true;
     }
     
     const html = `
@@ -123,6 +125,14 @@ const showFormPenerima = async (id = null) => {
                             <label class="block text-sm font-medium text-slate-700 mb-1">No. Telp (Opsional)</label>
                             <input type="tel" id="fp-notelp" value="${item.no_telp || ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none" placeholder="0812...">
                         </div>
+                        <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 mt-2">
+                            <div class="relative w-12 h-6">
+                                <input type="checkbox" id="fp-muslim" class="sr-only toggle-checkbox" ${item.muslim ? 'checked' : ''}>
+                                <div class="toggle-label absolute inset-0"></div>
+                                <div class="toggle-dot absolute shadow-sm"></div>
+                            </div>
+                            <span class="text-sm font-medium text-slate-700">Muslim</span>
+                        </label>
                         
                         <button type="submit" class="w-full bg-qurban-700 hover:bg-qurban-800 text-white font-medium py-3 rounded-xl transition-colors mt-6 flex items-center justify-center gap-2">
                             <i class="ph ph-floppy-disk"></i> Simpan Perubahan
@@ -154,7 +164,8 @@ const showFormPenerima = async (id = null) => {
             wilayah: document.getElementById('fp-wilayah').value,
             alamat: document.getElementById('fp-alamat').value,
             jumlah: parseInt(document.getElementById('fp-jumlah').value) || 1,
-            no_telp: document.getElementById('fp-notelp').value
+            no_telp: document.getElementById('fp-notelp').value,
+            muslim: document.getElementById('fp-muslim').checked
         };
         
         try {
