@@ -9,9 +9,6 @@ async function buildPenerimaView() {
     const wilayahOptions = [...WILAYAH_OPTIONS, 'Semua'];
     const activeFilter = window.penerimaFilter || wilayahOptions[0];
 
-    console.log("Active Filter:", activeFilter);
-    console.log("Total Penerima (before filtering):", penerimas.length);
-
     const filtered = activeFilter !== 'Semua' ? penerimas.filter(p => p.wilayah === activeFilter) : penerimas;
     const totalPenerima = filtered.reduce((acc, curr) => acc + curr.jumlah, 0);
 
@@ -201,11 +198,16 @@ function attachPenerimaListeners() {
         btn.addEventListener('click', (e) => showFormPenerima(e.currentTarget.dataset.id));
     });
     document.querySelectorAll('.btn-delete-penerima').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
             if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data penerima ini?')) {
-                await window.api.penerima.delete(e.currentTarget.dataset.id);
-                showToast('Data terhapus');
-                renderView('penerima');
+                try {
+                    await window.api.penerima.delete(id);
+                    showToast('Data terhapus');
+                    renderView('penerima');
+                } catch (err) {
+                    showToast('Gagal menghapus: ' + err.message, 'error');
+                }
             }
         });
     });

@@ -183,11 +183,16 @@ function attachKeuanganListeners() {
         btn.addEventListener('click', (e) => showFormTransaksi(e.currentTarget.dataset.id));
     });
     document.querySelectorAll('.btn-delete-transaksi').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
             if(await showConfirm('Hapus Transaksi', 'Yakin ingin menghapus transaksi ini? Saldo akan otomatis disesuaikan.')) {
-                await window.api.transaksi.delete(e.currentTarget.dataset.id);
-                showToast('Transaksi terhapus');
-                renderView('keuangan');
+                try {
+                    await window.api.transaksi.delete(id);
+                    showToast('Transaksi terhapus');
+                    renderView('keuangan');
+                } catch (err) {
+                    showToast('Gagal menghapus: ' + err.message, 'error');
+                }
             }
         });
     });

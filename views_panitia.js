@@ -185,14 +185,20 @@ function attachPanitiaListeners() {
         btn.addEventListener('click', () => showFormPanitia());
     });
     document.querySelectorAll('.btn-edit-panitia').forEach(btn => {
-        btn.addEventListener('click', (e) => showFormPanitia(e.currentTarget.dataset.id));
+        btn.addEventListener('click', () => showFormPanitia(btn.dataset.id));
     });
     document.querySelectorAll('.btn-delete-panitia').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
             if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data panitia ini?')) {
-                await window.api.panitia.delete(e.currentTarget.dataset.id);
-                showToast('Data terhapus');
-                renderView('panitia');
+                try {
+                    await window.api.panitia.delete(id);
+                    showToast('Data terhapus');
+                    renderView('panitia');
+                } catch (err) {
+                    console.error("Delete error:", err);
+                    showToast('Gagal menghapus: ' + err.message, 'error');
+                }
             }
         });
     });

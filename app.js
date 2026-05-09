@@ -248,15 +248,14 @@ async function buildPengqurbanView() {
     const sapiGroups = KELOMPOK_OPTIONS.filter(k => k.includes('Sapi'));
     const kambingGroup = 'Kambing';
 
-    let totalHewan = 0;
+    let totalHewanSapi = 0;
     let totalOrang = qurbans ? qurbans.length : 0;
 
     // Count hewan
     sapiGroups.forEach(g => {
-        if (qurbans.some(q => q.kelompok === g)) totalHewan += 1; // 1 kelompok sapi = 1 hewan
+        if (qurbans.some(q => q.kelompok === g)) totalHewanSapi += 1; // 1 kelompok sapi = 1 hewan
     });
     const kambingCount = qurbans.filter(q => q.kelompok === kambingGroup).length;
-    totalHewan += kambingCount;
 
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
@@ -269,8 +268,13 @@ async function buildPengqurbanView() {
                 <h3 class="text-2xl font-bold mb-4">Progress Qurban</h3>
                 <div class="flex gap-6">
                     <div>
-                        <div class="text-3xl font-bold">${totalHewan}</div>
-                        <div class="text-xs text-qurban-200">Hewan</div>
+                        <div class="text-3xl font-bold">${totalHewanSapi}</div>
+                        <div class="text-xs text-qurban-200">Sapi</div>
+                    </div>
+                    <div class="w-px bg-qurban-600"></div>
+                    <div>
+                        <div class="text-3xl font-bold">${kambingCount}</div>
+                        <div class="text-xs text-qurban-200">Kambing</div>
                     </div>
                     <div class="w-px bg-qurban-600"></div>
                     <div>
@@ -342,7 +346,7 @@ async function buildPengqurbanView() {
             <div class="p-4 border-b border-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-qurban-50 text-qurban-600 flex items-center justify-center font-bold border border-qurban-100">
-                        <i class="ph-fill ph-paw-print text-xl"></i>
+                        <i class="ph-fill ph-goat text-xl"></i>
                     </div>
                     <div>
                         <h4 class="font-semibold text-slate-800">Kambing</h4>
@@ -491,11 +495,16 @@ function attachViewListeners(view) {
             btn.addEventListener('click', (e) => showFormPengqurban(e.currentTarget.dataset.id));
         });
         document.querySelectorAll('.btn-delete-qurban').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
                 if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data pengqurban ini?')) {
-                    await window.api.pengqurban.delete(e.currentTarget.dataset.id);
-                    showToast('Data terhapus');
-                    renderView('pengqurban');
+                    try {
+                        await window.api.pengqurban.delete(id);
+                        showToast('Data terhapus');
+                        renderView('pengqurban');
+                    } catch (err) {
+                        showToast('Gagal menghapus: ' + err.message, 'error');
+                    }
                 }
             });
         });
