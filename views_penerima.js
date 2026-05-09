@@ -6,7 +6,7 @@ async function buildPenerimaView() {
 
     // We need a filter state, defaulting to 'RT 1 RW 6' or all
 
-    const wilayahOptions = ['Semua', ...WILAYAH_OPTIONS];
+    const wilayahOptions = [...WILAYAH_OPTIONS, 'Semua'];
     const activeFilter = window.penerimaFilter || wilayahOptions[0];
 
     console.log("Active Filter:", activeFilter);

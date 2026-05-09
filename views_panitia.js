@@ -57,7 +57,7 @@ async function buildPanitiaView() {
                         <h3 class="font-bold text-slate-800 flex items-center gap-2">
                             <i class="ph ${icon} text-qurban-600 text-xl"></i> ${tugas}
                         </h3>
-                        <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${members.length} Orang</span>
+                        <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${members.length > 2 ? members.length + ` Orang` : ``}</span>
                     </div>
                     <div class="space-y-3">
                         ${members.map(m => `
