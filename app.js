@@ -345,8 +345,8 @@ async function buildPengqurbanView() {
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mt-4">
             <div class="p-4 border-b border-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-qurban-50 text-qurban-600 flex items-center justify-center font-bold border border-qurban-100">
-                        <i class="ph-fill ph-goat text-xl"></i>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-medium">
+                        K
                     </div>
                     <div>
                         <h4 class="font-semibold text-slate-800">Kambing</h4>
