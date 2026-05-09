@@ -3,10 +3,10 @@
 // ===================================================================
 async function buildPenerimaView() {
     const { data: penerimas } = await window.api.penerima.select();
-    
+
     // We need a filter state, defaulting to 'RT 1 RW 6' or all
     const activeFilter = window.penerimaFilter || WILAYAH_OPTIONS[0];
-    
+
     const filtered = activeFilter ? penerimas.filter(p => p.wilayah === activeFilter) : penerimas;
     const totalPenerima = filtered.reduce((acc, curr) => acc + curr.jumlah, 0);
 
@@ -23,7 +23,7 @@ async function buildPenerimaView() {
                     <span class="text-sm text-qurban-200 mb-1">Keluarga</span>
                 </div>
                 <div class="inline-flex items-center gap-1.5 bg-qurban-600/50 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium border border-qurban-500/50">
-                    <i class="ph ph-map-pin"></i> ${activeFilter} (Aktif)
+                    <i class="ph ph-map-pin"></i> ${activeFilter}
                 </div>
             </div>
 
@@ -73,7 +73,7 @@ async function buildPenerimaView() {
                             </div>
                         </div>
                         ${currentUser ? `
-                            <div class="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex gap-1 flex-col sm:flex-row">
                                 <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-penerima" data-id="${p.id}"><i class="ph ph-pencil-simple"></i></button>
                                 <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-penerima" data-id="${p.id}"><i class="ph ph-trash"></i></button>
                             </div>
@@ -93,7 +93,7 @@ const showFormPenerima = async (id = null) => {
         item = data.find(i => i.id === id);
         if (item.muslim === undefined) item.muslim = true;
     }
-    
+
     const html = `
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-end sm:items-center justify-center p-0 sm:p-4 opacity-0">
             <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -143,13 +143,13 @@ const showFormPenerima = async (id = null) => {
         </div>
     `;
     showModal(html);
-    
+
     const wilSelect = document.getElementById('fp-wilayah');
     const jumContainer = document.getElementById('fp-jumlah-container');
     const jumInput = document.getElementById('fp-jumlah');
-    
+
     wilSelect.addEventListener('change', (e) => {
-        if(e.target.value === 'Lainnya') {
+        if (e.target.value === 'Lainnya') {
             jumContainer.classList.remove('hidden');
         } else {
             jumContainer.classList.add('hidden');
@@ -167,14 +167,14 @@ const showFormPenerima = async (id = null) => {
             no_telp: document.getElementById('fp-notelp').value,
             muslim: document.getElementById('fp-muslim').checked
         };
-        
+
         try {
-            if(id) await window.api.penerima.update(id, data);
+            if (id) await window.api.penerima.update(id, data);
             else await window.api.penerima.insert(data);
             showToast('Data berhasil disimpan');
             closeModal();
             renderView('penerima');
-        } catch(err) {
+        } catch (err) {
             showToast('Gagal menyimpan data', 'error');
         }
     });
@@ -182,13 +182,13 @@ const showFormPenerima = async (id = null) => {
 
 function attachPenerimaListeners() {
     const filterSelect = document.getElementById('filter-wilayah');
-    if(filterSelect) {
+    if (filterSelect) {
         filterSelect.addEventListener('change', (e) => {
             window.penerimaFilter = e.target.value;
             renderView('penerima');
         });
     }
-    
+
     document.querySelectorAll('.btn-add-penerima').forEach(btn => {
         btn.addEventListener('click', () => showFormPenerima());
     });
@@ -197,7 +197,7 @@ function attachPenerimaListeners() {
     });
     document.querySelectorAll('.btn-delete-penerima').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            if(confirm('Yakin ingin menghapus data ini?')) {
+            if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data penerima ini?')) {
                 await window.api.penerima.delete(e.currentTarget.dataset.id);
                 showToast('Data terhapus');
                 renderView('penerima');

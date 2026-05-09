@@ -78,7 +78,7 @@ async function buildPanitiaView() {
                                     </div>
                                 </div>
                                 ${currentUser ? `
-                                    <div class="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity flex-col md:flex-row">
+                                    <div class="flex gap-1 flex-col md:flex-row">
                                         <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-panitia" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
                                         <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-panitia" data-id="${m.id}"><i class="ph ph-trash"></i></button>
                                     </div>
@@ -189,7 +189,7 @@ function attachPanitiaListeners() {
     });
     document.querySelectorAll('.btn-delete-panitia').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            if(confirm('Yakin ingin menghapus data panitia ini?')) {
+            if(await showConfirm('Hapus Data', 'Yakin ingin menghapus data panitia ini?')) {
                 await window.api.panitia.delete(e.currentTarget.dataset.id);
                 showToast('Data terhapus');
                 renderView('panitia');

@@ -82,7 +82,7 @@ async function buildKeuanganView() {
                                     ${isIncome ? '+' : '-'}${formatRupiah(t.nominal)}
                                 </div>
                                 ${currentUser ? `
-                                    <div class="flex gap-2 justify-end mt-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex gap-2 justify-end mt-1">
                                         <button class="text-slate-400 hover:text-blue-500 btn-edit-transaksi" data-id="${t.id}"><i class="ph ph-pencil-simple text-sm"></i></button>
                                         <button class="text-slate-400 hover:text-red-500 btn-delete-transaksi" data-id="${t.id}"><i class="ph ph-trash text-sm"></i></button>
                                     </div>
@@ -184,7 +184,7 @@ function attachKeuanganListeners() {
     });
     document.querySelectorAll('.btn-delete-transaksi').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            if(confirm('Yakin ingin menghapus transaksi ini?')) {
+            if(await showConfirm('Hapus Transaksi', 'Yakin ingin menghapus transaksi ini? Saldo akan otomatis disesuaikan.')) {
                 await window.api.transaksi.delete(e.currentTarget.dataset.id);
                 showToast('Transaksi terhapus');
                 renderView('keuangan');

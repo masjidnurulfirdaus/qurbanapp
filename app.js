@@ -4,7 +4,32 @@ const WILAYAH_OPTIONS = [
     "RT 1 RW 7", "RT 2 RW 7", "RT 3 RW 7", "RT 4 RW 7", "RT 2 RW 12", "Lainnya"
 ];
 const KELOMPOK_OPTIONS = ["Sapi Kelompok 1", "Sapi Kelompok 2", "Sapi Kelompok 3", "Sapi Kelompok 4", "Kambing"];
-const TUGAS_OPTIONS = ["Ketua", "Bendahara", "Sekretaris", "Penyembelihan", "Pencacahan", "Penimbangan", "Distribusi"];
+const TUGAS_OPTIONS = [
+    "Ketua",
+    "Wakil Ketua",
+    "Penanggung Jawab",
+    "Bendahara",
+    "Sekretaris",
+    "Dokumentasi",
+    "Keamanan",
+    "Kebersihan",
+    "Konsumsi",
+    "Pembagian Daging ke Pengkurban",
+    "Pemotongan Tulang",
+    "Penanganan, Penimbangan dan Distribusi Daging",
+    "Pencacahan Kambing",
+    "Pencacahan Sapi",
+    "Pencucian Jerohan",
+    "Penerima Hewan Kurban",
+    "Pengadaan Hewan Kurban",
+    "Pengasah Pisau",
+    "Pengelola Kulit",
+    "Penghubung Daging ke Ibu-ibu",
+    "Pengirim Daging ke Donatur",
+    "Penyembelihan Kambing",
+    "Perlengkapan",
+    "Relawan"
+];
 
 // State
 let currentUser = null;
@@ -61,6 +86,43 @@ const closeModal = () => {
     if (dynamicModalContainer.firstElementChild) {
         dynamicModalContainer.innerHTML = '';
     }
+};
+
+const showConfirm = (title, message, confirmText = 'Hapus', cancelText = 'Batal') => {
+    return new Promise((resolve) => {
+        const html = `
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4 modal-enter">
+                <div class="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl">
+                    <div class="p-6 text-center">
+                        <div class="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                            <i class="ph ph-warning-circle"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">${title}</h3>
+                        <p class="text-sm text-slate-500 mb-6">${message}</p>
+                        <div class="flex gap-3">
+                            <button id="btn-confirm-cancel" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors">${cancelText}</button>
+                            <button id="btn-confirm-ok" class="flex-1 py-2.5 rounded-xl text-white font-medium bg-red-500 hover:bg-red-600 transition-colors">${confirmText}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        document.body.appendChild(container);
+
+        const close = (result) => {
+            const modal = container.firstElementChild;
+            modal.style.animation = 'fadeOut 0.2s ease-in forwards';
+            setTimeout(() => {
+                container.remove();
+                resolve(result);
+            }, 200);
+        };
+
+        container.querySelector('#btn-confirm-cancel').addEventListener('click', () => close(false));
+        container.querySelector('#btn-confirm-ok').addEventListener('click', () => close(true));
+    });
 };
 
 // -------------------------------------------------------------------
@@ -261,7 +323,7 @@ async function buildPengqurbanView() {
                                 </div>
                             </div>
                             ${currentUser ? `
-                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="flex gap-1">
                                     <button class="p-1.5 text-slate-400 hover:text-blue-500 btn-edit-qurban" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
                                     <button class="p-1.5 text-slate-400 hover:text-red-500 btn-delete-qurban" data-id="${m.id}"><i class="ph ph-trash"></i></button>
                                 </div>
@@ -312,7 +374,7 @@ async function buildPengqurbanView() {
                             </div>
                         </div>
                         ${currentUser ? `
-                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100">
+                            <div class="flex gap-1">
                                 <button class="p-1.5 text-slate-400 hover:text-blue-500 btn-edit-qurban" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
                                 <button class="p-1.5 text-slate-400 hover:text-red-500 btn-delete-qurban" data-id="${m.id}"><i class="ph ph-trash"></i></button>
                             </div>
@@ -430,7 +492,7 @@ function attachViewListeners(view) {
         });
         document.querySelectorAll('.btn-delete-qurban').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                if (confirm('Yakin ingin menghapus data ini?')) {
+                if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data pengqurban ini?')) {
                     await window.api.pengqurban.delete(e.currentTarget.dataset.id);
                     showToast('Data terhapus');
                     renderView('pengqurban');
