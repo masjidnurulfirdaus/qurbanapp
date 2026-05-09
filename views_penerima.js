@@ -9,7 +9,7 @@ async function buildPenerimaView() {
     const wilayahOptions = ['Semua', ...WILAYAH_OPTIONS];
     const activeFilter = window.penerimaFilter || wilayahOptions[0];
 
-    const filtered = activeFilter ? penerimas.filter(p => p.wilayah === activeFilter) : penerimas;
+    const filtered = activeFilter !== 'Semua' ? penerimas.filter(p => p.wilayah === activeFilter) : penerimas;
     const totalPenerima = filtered.reduce((acc, curr) => acc + curr.jumlah, 0);
 
     let html = `
