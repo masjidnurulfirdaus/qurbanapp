@@ -77,7 +77,7 @@ async function buildAbsensiView() {
                             
                             ${currentUser ? `
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only toggle-absensi" data-id="${m.id}" ${m.hadir ? 'checked' : ''}>
+                                    <input type="checkbox" class="sr-only peer toggle-absensi" data-id="${m.id}" ${m.hadir ? 'checked' : ''}>
                                     <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-qurban-600 transition-colors"></div>
                                 </label>
                             ` : `
