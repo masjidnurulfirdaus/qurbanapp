@@ -3,19 +3,19 @@
 // ===================================================================
 async function buildAbsensiView() {
     const { data: panitias } = await window.api.panitia.select();
-    
+
     const totalHadir = panitias.filter(p => p.hadir).length;
 
     // Filter state
     const activeFilter = window.absensiFilter || 'Belum Hadir';
-    
+
     // Apply filter
-    const displayedPanitias = activeFilter === 'Belum Hadir' ? panitias.filter(p => !p.hadir) : panitias;
+    const displayedPanitias = activeFilter === 'Belum Hadir' ? panitias.filter(p => !p.hadir) : panitias.filter(p => p.hadir);
 
     // Group panitia by Wilayah
     const byWilayah = {};
     displayedPanitias.forEach(p => {
-        if(!byWilayah[p.wilayah]) byWilayah[p.wilayah] = [];
+        if (!byWilayah[p.wilayah]) byWilayah[p.wilayah] = [];
         byWilayah[p.wilayah].push(p);
     });
 
@@ -33,18 +33,18 @@ async function buildAbsensiView() {
                     </div>
                 </div>
                 <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-inner">
-                    <span class="text-xl font-bold">${Math.round((totalHadir/Math.max(1,panitias.length))*100)}%</span>
+                    <span class="text-xl font-bold">${Math.round((totalHadir / Math.max(1, panitias.length)) * 100)}%</span>
                 </div>
             </div>
             
             <!-- Filter UI -->
             <div class="flex gap-2 bg-slate-100 p-1 rounded-xl">
-                <button class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${activeFilter === 'Semua' ? 'bg-white text-qurban-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'} btn-filter-absensi" data-filter="Semua">Semua</button>
+                <button class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${activeFilter === 'Hadir' ? 'bg-white text-qurban-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'} btn-filter-absensi" data-filter="Hadir">Hadir</button>
                 <button class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${activeFilter === 'Belum Hadir' ? 'bg-white text-qurban-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'} btn-filter-absensi" data-filter="Belum Hadir">Belum Hadir</button>
             </div>
     `;
 
-    if (displayedPanitias.length === 0) {
+    if ((activeFilter === 'Belum Hadir') && displayedPanitias.length === 0) {
         html += `
             <div class="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm mt-6">
                 <div class="w-16 h-16 mx-auto bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
@@ -67,7 +67,7 @@ async function buildAbsensiView() {
                         <div class="bg-white rounded-2xl p-3 px-4 shadow-sm border border-slate-100 flex justify-between items-center transition-colors ${m.hadir ? 'border-l-4 border-l-qurban-500' : ''}">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full ${m.hadir ? 'bg-qurban-50 text-qurban-600' : 'bg-slate-100 text-slate-400'} flex items-center justify-center text-sm font-bold transition-colors">
-                                    ${m.nama.substring(0,2).toUpperCase()}
+                                    ${m.nama.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-slate-800 text-sm">${m.nama}</h4>
@@ -108,13 +108,13 @@ function attachAbsensiListeners() {
         toggle.addEventListener('change', async (e) => {
             const id = e.target.dataset.id;
             const hadir = e.target.checked;
-            
+
             try {
                 await window.api.panitia.update(id, { hadir });
                 // Re-render to update the progress bar and border colors, but without full loader for smooth UX
                 // Actually re-rendering the whole view is easiest for now
                 renderView('absensi');
-            } catch(err) {
+            } catch (err) {
                 e.target.checked = !hadir; // revert
                 showToast('Gagal mengupdate absensi', 'error');
             }
