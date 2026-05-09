@@ -1,6 +1,6 @@
 // Constants
 const WILAYAH_OPTIONS = [
-    "RT 1 RW 6", "RT 2 RW 6", "RT 3 RW 6", "RT 4 RW 6", "RT 5 RW 6", "RT 6 RW 6", 
+    "RT 1 RW 6", "RT 2 RW 6", "RT 3 RW 6", "RT 4 RW 6", "RT 5 RW 6", "RT 6 RW 6",
     "RT 1 RW 7", "RT 2 RW 7", "RT 3 RW 7", "RT 4 RW 7", "RT 2 RW 12", "Lainnya"
 ];
 const KELOMPOK_OPTIONS = ["Sapi Kelompok 1", "Sapi Kelompok 2", "Sapi Kelompok 3", "Sapi Kelompok 4", "Kambing"];
@@ -29,10 +29,10 @@ const showToast = (message, type = 'success') => {
     const toast = document.createElement('div');
     const bgColor = type === 'success' ? 'bg-qurban-600' : 'bg-red-500';
     const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning-circle';
-    
+
     toast.className = `flex items-center gap-3 ${bgColor} text-white px-4 py-3 rounded-xl shadow-lg toast-enter pointer-events-auto`;
     toast.innerHTML = `<i class="ph ${icon} text-xl"></i> <span class="font-medium text-sm">${message}</span>`;
-    
+
     toastContainer.appendChild(toast);
     setTimeout(() => {
         toast.classList.replace('toast-enter', 'toast-leave');
@@ -45,20 +45,20 @@ const showModal = (htmlContent) => {
     const modal = dynamicModalContainer.firstElementChild;
     // trigger animation
     requestAnimationFrame(() => modal.classList.add('modal-enter'));
-    
+
     // Add close listener
     const closeBtn = modal.querySelector('.modal-close-btn');
-    if(closeBtn) {
+    if (closeBtn) {
         closeBtn.addEventListener('click', closeModal);
     }
     // Close on backdrop click
     modal.addEventListener('click', (e) => {
-        if(e.target === modal) closeModal();
+        if (e.target === modal) closeModal();
     });
 };
 
 const closeModal = () => {
-    if(dynamicModalContainer.firstElementChild) {
+    if (dynamicModalContainer.firstElementChild) {
         dynamicModalContainer.innerHTML = '';
     }
 };
@@ -119,7 +119,7 @@ loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
-    
+
     try {
         const { user } = await window.api.pengguna.login(username, password);
         currentUser = user;
@@ -147,7 +147,7 @@ navItems.forEach(btn => {
         });
         e.currentTarget.classList.add('active', 'text-qurban-700');
         e.currentTarget.classList.remove('text-slate-400');
-        
+
         renderView(target);
     });
 });
@@ -155,14 +155,14 @@ navItems.forEach(btn => {
 const renderView = async (view) => {
     currentView = view;
     appContent.classList.add('opacity-0'); // fade out
-    
+
     setTimeout(async () => {
         appContent.innerHTML = '<div class="flex justify-center p-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-qurban-600"></div></div>';
         appContent.classList.remove('opacity-0'); // show loader
-        
+
         try {
             let html = '';
-            switch(view) {
+            switch (view) {
                 case 'pengqurban': html = await buildPengqurbanView(); break;
                 case 'penerima': html = await buildPenerimaView(); break;
                 case 'panitia': html = await buildPanitiaView(); break;
@@ -182,16 +182,16 @@ const renderView = async (view) => {
 // ===================================================================
 async function buildPengqurbanView() {
     const { data: qurbans } = await window.api.pengqurban.select();
-    
+
     const sapiGroups = KELOMPOK_OPTIONS.filter(k => k.includes('Sapi'));
     const kambingGroup = 'Kambing';
-    
+
     let totalHewan = 0;
-    let totalOrang = qurbans.length;
-    
+    let totalOrang = qurbans ? qurbans.length : 0;
+
     // Count hewan
     sapiGroups.forEach(g => {
-        if(qurbans.some(q => q.kelompok === g)) totalHewan += 1; // 1 kelompok sapi = 1 hewan
+        if (qurbans.some(q => q.kelompok === g)) totalHewan += 1; // 1 kelompok sapi = 1 hewan
     });
     const kambingCount = qurbans.filter(q => q.kelompok === kambingGroup).length;
     totalHewan += kambingCount;
@@ -223,7 +223,7 @@ async function buildPengqurbanView() {
     sapiGroups.forEach((group, index) => {
         const members = qurbans.filter(q => q.kelompok === group);
         const isFull = members.length >= 7;
-        
+
         html += `
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="p-4 border-b border-slate-50 flex justify-between items-center">
@@ -250,14 +250,14 @@ async function buildPengqurbanView() {
                         <div class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors group">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-medium">
-                                    ${m.nama.substring(0,2).toUpperCase()}
+                                    ${m.nama.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div>
                                     <div class="text-sm font-semibold text-slate-800 flex items-center gap-2">
                                         ${m.nama}
                                         ${m.status_lunas ? '<i class="ph-fill ph-check-circle text-qurban-500 text-xs" title="Lunas"></i>' : ''}
                                     </div>
-                                    <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah==='Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
+                                    <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah === 'Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
                                 </div>
                             </div>
                             ${currentUser ? `
@@ -301,14 +301,14 @@ async function buildPengqurbanView() {
                     <div class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors group">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-medium">
-                                ${m.nama.substring(0,2).toUpperCase()}
+                                ${m.nama.substring(0, 2).toUpperCase()}
                             </div>
                             <div>
                                 <div class="text-sm font-semibold text-slate-800 flex items-center gap-2">
                                     ${m.nama}
                                     ${m.status_lunas ? '<i class="ph-fill ph-check-circle text-qurban-500 text-xs" title="Lunas"></i>' : ''}
                                 </div>
-                                <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah==='Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
+                                <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah === 'Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
                             </div>
                         </div>
                         ${currentUser ? `
@@ -322,7 +322,7 @@ async function buildPengqurbanView() {
             </div>
         </div>
     </div>`;
-    
+
     return html;
 }
 
@@ -333,7 +333,7 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
         const { data } = await window.api.pengqurban.select();
         item = data.find(i => i.id === id);
     }
-    
+
     const html = `
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-end sm:items-center justify-center p-0 sm:p-4 opacity-0">
             <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -385,12 +385,12 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
         </div>
     `;
     showModal(html);
-    
+
     // Logic for Wilayah dropdown
     const wilSelect = document.getElementById('fq-wilayah');
     const alContainer = document.getElementById('fq-alamat-container');
     wilSelect.addEventListener('change', (e) => {
-        if(e.target.value === 'Lainnya') alContainer.classList.remove('hidden');
+        if (e.target.value === 'Lainnya') alContainer.classList.remove('hidden');
         else alContainer.classList.add('hidden');
     });
 
@@ -404,14 +404,14 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
             no_telp: document.getElementById('fq-notelp').value,
             status_lunas: document.getElementById('fq-lunas').checked
         };
-        
+
         try {
-            if(id) await window.api.pengqurban.update(id, data);
+            if (id) await window.api.pengqurban.update(id, data);
             else await window.api.pengqurban.insert(data);
             showToast('Data berhasil disimpan');
             closeModal();
             renderView('pengqurban');
-        } catch(err) {
+        } catch (err) {
             showToast('Gagal menyimpan data', 'error');
         }
     });
@@ -421,7 +421,7 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
 // ATTACH LISTENERS FOR VIEWS
 // ===================================================================
 function attachViewListeners(view) {
-    if(view === 'pengqurban') {
+    if (view === 'pengqurban') {
         document.querySelectorAll('.btn-add-qurban').forEach(btn => {
             btn.addEventListener('click', (e) => showFormPengqurban(null, e.currentTarget.dataset.kel));
         });
@@ -430,20 +430,20 @@ function attachViewListeners(view) {
         });
         document.querySelectorAll('.btn-delete-qurban').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                if(confirm('Yakin ingin menghapus data ini?')) {
+                if (confirm('Yakin ingin menghapus data ini?')) {
                     await window.api.pengqurban.delete(e.currentTarget.dataset.id);
                     showToast('Data terhapus');
                     renderView('pengqurban');
                 }
             });
         });
-    } else if(view === 'penerima' && typeof attachPenerimaListeners === 'function') {
+    } else if (view === 'penerima' && typeof attachPenerimaListeners === 'function') {
         attachPenerimaListeners();
-    } else if(view === 'panitia' && typeof attachPanitiaListeners === 'function') {
+    } else if (view === 'panitia' && typeof attachPanitiaListeners === 'function') {
         attachPanitiaListeners();
-    } else if(view === 'absensi' && typeof attachAbsensiListeners === 'function') {
+    } else if (view === 'absensi' && typeof attachAbsensiListeners === 'function') {
         attachAbsensiListeners();
-    } else if(view === 'keuangan' && typeof attachKeuanganListeners === 'function') {
+    } else if (view === 'keuangan' && typeof attachKeuanganListeners === 'function') {
         attachKeuanganListeners();
     }
 }
