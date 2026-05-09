@@ -1,0 +1,6 @@
+# Local environment variables
+env.js
+
+# OS files
+.DS_Store
+Thumbs.db

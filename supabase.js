@@ -1,8 +1,6 @@
 // Supabase Configuration & Initialization
-
-// The user is expected to put their Supabase URL and Anon Key here.
-const SUPABASE_URL = ''; 
-const SUPABASE_ANON_KEY = '';
+const SUPABASE_URL = window.ENV?.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || '';
 
 let supabaseClient = null;
 
