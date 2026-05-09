@@ -5,7 +5,9 @@ async function buildPenerimaView() {
     const { data: penerimas } = await window.api.penerima.select();
 
     // We need a filter state, defaulting to 'RT 1 RW 6' or all
-    const activeFilter = window.penerimaFilter || WILAYAH_OPTIONS[0];
+
+    const wilayahOptions = ['Semua', ...WILAYAH_OPTIONS];
+    const activeFilter = window.penerimaFilter || wilayahOptions[0];
 
     const filtered = activeFilter ? penerimas.filter(p => p.wilayah === activeFilter) : penerimas;
     const totalPenerima = filtered.reduce((acc, curr) => acc + curr.jumlah, 0);
@@ -32,7 +34,7 @@ async function buildPenerimaView() {
                 <label class="text-sm font-semibold text-slate-700">Wilayah Distribusi</label>
                 <div class="flex gap-2">
                     <select id="filter-wilayah" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none bg-white font-medium text-slate-700">
-                        ${WILAYAH_OPTIONS.map(opt => `<option value="${opt}" ${activeFilter === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        ${wilayahOptions.map(opt => `<option value="${opt}" ${activeFilter === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                     </select>
                 </div>
             </div>

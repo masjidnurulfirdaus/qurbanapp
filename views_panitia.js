@@ -3,10 +3,10 @@
 // ===================================================================
 async function buildPanitiaView() {
     const { data: panitias } = await window.api.panitia.select();
-    
+
     const activeCount = panitias.length;
-    const koordinatorCount = panitias.filter(p => p.is_koordinator).length;
-    const anggotaCount = activeCount - koordinatorCount;
+    const relawanCount = panitias.filter(p => p.tugas.includes('Relawan')).length;
+    const panitiaCount = activeCount - relawanCount;
 
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
@@ -22,8 +22,8 @@ async function buildPanitiaView() {
                         <span class="text-sm">Orang</span>
                     </div>
                     <div class="flex gap-2">
-                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${koordinatorCount} Koordinator</span>
-                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${anggotaCount} Anggota</span>
+                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${panitiaCount} Panita</span>
+                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${relawanCount} Relawan</span>
                     </div>
                 </div>
                 ${currentUser ? `
@@ -41,15 +41,15 @@ async function buildPanitiaView() {
         // Sort: Koordinator first
         members.sort((a, b) => (b.is_koordinator ? 1 : 0) - (a.is_koordinator ? 1 : 0));
 
-        if(members.length > 0) {
+        if (members.length > 0) {
             let icon = 'ph-users';
-            if(tugas === 'Ketua') icon = 'ph-star';
-            else if(tugas === 'Bendahara') icon = 'ph-wallet';
-            else if(tugas === 'Sekretaris') icon = 'ph-notebook';
-            else if(tugas === 'Penyembelihan') icon = 'ph-scissors';
-            else if(tugas === 'Pencacahan') icon = 'ph-knife';
-            else if(tugas === 'Penimbangan') icon = 'ph-scales';
-            else if(tugas === 'Distribusi') icon = 'ph-truck';
+            if (tugas === 'Ketua') icon = 'ph-star';
+            else if (tugas === 'Bendahara') icon = 'ph-wallet';
+            else if (tugas === 'Sekretaris') icon = 'ph-notebook';
+            else if (tugas === 'Penyembelihan') icon = 'ph-scissors';
+            else if (tugas === 'Pencacahan') icon = 'ph-knife';
+            else if (tugas === 'Penimbangan') icon = 'ph-scales';
+            else if (tugas === 'Distribusi') icon = 'ph-truck';
 
             html += `
                 <div class="mt-6">
@@ -64,7 +64,7 @@ async function buildPanitiaView() {
                             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold">
-                                        ${m.nama.substring(0,2).toUpperCase()}
+                                        ${m.nama.substring(0, 2).toUpperCase()}
                                     </div>
                                     <div>
                                         <div class="flex items-center gap-2">
@@ -101,7 +101,7 @@ const showFormPanitia = async (id = null) => {
         const { data } = await window.api.panitia.select();
         item = data.find(i => i.id === id);
     }
-    
+
     const html = `
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-end sm:items-center justify-center p-0 sm:p-4 opacity-0">
             <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -153,9 +153,9 @@ const showFormPanitia = async (id = null) => {
 
     document.getElementById('form-panitia').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const tugasChecked = Array.from(document.querySelectorAll('input[name="fpt-tugas"]:checked')).map(cb => cb.value);
-        if(tugasChecked.length === 0) {
+        if (tugasChecked.length === 0) {
             showToast('Pilih minimal satu tugas', 'error');
             return;
         }
@@ -167,14 +167,14 @@ const showFormPanitia = async (id = null) => {
             is_koordinator: document.getElementById('fpt-koor').checked,
             hadir: item.hadir // preserve hadir status
         };
-        
+
         try {
-            if(id) await window.api.panitia.update(id, data);
+            if (id) await window.api.panitia.update(id, data);
             else await window.api.panitia.insert(data);
             showToast('Data berhasil disimpan');
             closeModal();
             renderView('panitia');
-        } catch(err) {
+        } catch (err) {
             showToast('Gagal menyimpan data', 'error');
         }
     });
@@ -189,7 +189,7 @@ function attachPanitiaListeners() {
     });
     document.querySelectorAll('.btn-delete-panitia').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            if(await showConfirm('Hapus Data', 'Yakin ingin menghapus data panitia ini?')) {
+            if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data panitia ini?')) {
                 await window.api.panitia.delete(e.currentTarget.dataset.id);
                 showToast('Data terhapus');
                 renderView('panitia');
