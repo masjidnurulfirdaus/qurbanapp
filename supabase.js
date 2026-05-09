@@ -5,6 +5,9 @@ const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || '';
 let supabaseClient = null;
 
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    console.log("Menghubungkan ke Supabase...");
+    console.log("URL:", SUPABASE_URL);
+    console.log("Key Length:", SUPABASE_ANON_KEY.length); // Cek panjang kunci
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } else {
     console.warn("Supabase credentials not found. Using Mock Data mode for demonstration.");
