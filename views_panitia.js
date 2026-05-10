@@ -11,7 +11,7 @@ async function buildPanitiaView() {
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
             <!-- Header -->
-            <div class="bg-qurban-700 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col items-center">
+            <div class="bg-qurban-700 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col gap-2">
                 <div class="flex justify-between items-center">
                     <div class="absolute -right-4 -bottom-4 opacity-10">
                         <i class="ph ph-identification-badge text-9xl"></i>
