@@ -11,31 +11,33 @@ async function buildPanitiaView() {
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
             <!-- Header -->
-            <div class="bg-qurban-700 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden flex justify-between items-center">
-                <div class="absolute -right-4 -bottom-4 opacity-10">
-                    <i class="ph ph-identification-badge text-9xl"></i>
-                </div>
-                <div>
-                    <h2 class="text-sm font-medium text-qurban-100 mb-1">Total Panitia Aktif</h2>
-                    <div class="flex items-baseline gap-2 mb-3">
-                        <h3 class="text-4xl font-bold">${activeCount}</h3>
-                        <span class="text-sm">Orang</span>
+            <div class="bg-qurban-700 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col items-center">
+                <div class="flex justify-between items-center">
+                    <div class="absolute -right-4 -bottom-4 opacity-10">
+                        <i class="ph ph-identification-badge text-9xl"></i>
                     </div>
-                    <div class="flex gap-2">
-                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${panitiaCount} Panita</span>
-                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${relawanCount} Relawan</span>
+                    <div>
+                        <h2 class="text-sm font-medium text-qurban-100 mb-1">Total Panitia Aktif</h2>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <h3 class="text-4xl font-bold">${activeCount}</h3>
+                            <span class="text-sm">Orang</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${panitiaCount} Panita</span>
+                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${relawanCount} Relawan</span>
+                        </div>
                     </div>
+                    ${currentUser ? `
+                        <button class="w-12 h-12 bg-white text-qurban-700 rounded-xl shadow-md flex items-center justify-center text-xl hover:bg-qurban-50 transition-colors z-10 btn-add-panitia">
+                            <i class="ph ph-plus font-bold"></i>
+                        </button>
+                    ` : ''}
                 </div>
-                ${currentUser ? `
-                    <button class="w-12 h-12 bg-white text-qurban-700 rounded-xl shadow-md flex items-center justify-center text-xl hover:bg-qurban-50 transition-colors z-10 btn-add-panitia">
-                        <i class="ph ph-plus font-bold"></i>
-                    </button>
-                ` : ''}
-                  <!-- Redirect to Absensi -->
+                <!-- Redirect to Absensi -->
                 <button onclick="document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active', 'text-qurban-700'); b.classList.add('text-slate-400')}); renderView('absensi')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-2xl transition-colors flex items-center justify-center gap-2 border border-slate-200">
                     <i class="ph ph-calendar-check text-xl text-qurban-600"></i>
                     <span>Kelola Absensi Panitia</span>
-                </button>
+                </button>                
             </div>
     `;
 

@@ -80,11 +80,7 @@ async function buildAbsensiView() {
                                     <input type="checkbox" class="sr-only peer toggle-absensi" data-id="${m.id}" ${m.hadir ? 'checked' : ''}>
                                     <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-qurban-600 transition-colors"></div>
                                 </label>
-                            ` : `
-                                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${m.hadir ? 'bg-qurban-50 text-qurban-600 border border-qurban-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
-                                    ${m.hadir ? 'Hadir' : 'Tidak Hadir'}
-                                </span>
-                            `}
+                            ` : ``}
                         </div>
                     `).join('')}
                 </div>
