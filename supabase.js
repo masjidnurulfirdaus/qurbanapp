@@ -38,6 +38,10 @@ const mockData = {
     transaksi: [
         { id: '1', nama_transaksi: 'Uang Muka Sapi 1', tanggal: '2024-06-01', jenis: 'pendapatan', nominal: 5000000, created_at: new Date().toISOString() },
         { id: '2', nama_transaksi: 'Beli Tali & Plastik', tanggal: '2024-06-02', jenis: 'pengeluaran', nominal: 150000, created_at: new Date().toISOString() }
+    ],
+    distribusi: [
+        { id: '1', kelompok: 'Pengqurban', id_penerima: '2', wilayah: null, nama_petugas: 'Ahmad', porsi_sapi: 2, porsi_kambing: 0, porsi_khusus: '', request: 'Daging 4 kg + 3 bungkus (sapi/kambing)', created_at: new Date().toISOString() },
+        { id: '2', kelompok: 'Penerima', id_penerima: null, wilayah: 'RT 2 RW 7', nama_petugas: 'Budi', porsi_sapi: 45, porsi_kambing: 0, porsi_khusus: '', request: '45 Porsi', created_at: new Date().toISOString() }
     ]
 };
 
@@ -141,6 +145,26 @@ const db = {
         delete: async (id) => {
             if (supabaseClient) return await supabaseClient.from('transaksi').delete().eq('id', id);
             mockData.transaksi = mockData.transaksi.filter(item => item.id !== id);
+            return { error: null };
+        }
+    },
+    distribusi: {
+        select: async () => supabaseClient ? await supabaseClient.from('distribusi').select('*').order('created_at', { ascending: false }) : { data: [...mockData.distribusi], error: null },
+        insert: async (data) => {
+            if (supabaseClient) return await supabaseClient.from('distribusi').insert([data]).select();
+            const newItem = { id: generateId(), created_at: new Date().toISOString(), ...data };
+            mockData.distribusi.unshift(newItem);
+            return { data: [newItem], error: null };
+        },
+        update: async (id, data) => {
+            if (supabaseClient) return await supabaseClient.from('distribusi').update(data).eq('id', id).select();
+            const idx = mockData.distribusi.findIndex(item => item.id === id);
+            if (idx > -1) mockData.distribusi[idx] = { ...mockData.distribusi[idx], ...data };
+            return { data: [mockData.distribusi[idx]], error: null };
+        },
+        delete: async (id) => {
+            if (supabaseClient) return await supabaseClient.from('distribusi').delete().eq('id', id);
+            mockData.distribusi = mockData.distribusi.filter(item => item.id !== id);
             return { error: null };
         }
     }

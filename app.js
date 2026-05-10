@@ -235,6 +235,7 @@ const renderView = async (view) => {
                 case 'panitia': html = await buildPanitiaView(); break;
                 case 'absensi': html = await buildAbsensiView(); break;
                 case 'keuangan': html = await buildKeuanganView(); break;
+                case 'distribusi': html = await buildDistribusiView(); break;
             }
             appContent.innerHTML = html;
             attachViewListeners(view);
@@ -599,6 +600,8 @@ function attachViewListeners(view) {
         attachAbsensiListeners();
     } else if (view === 'keuangan' && typeof attachKeuanganListeners === 'function') {
         attachKeuanganListeners();
+    } else if (view === 'distribusi' && typeof attachDistribusiListeners === 'function') {
+        attachDistribusiListeners();
     }
 }
 
