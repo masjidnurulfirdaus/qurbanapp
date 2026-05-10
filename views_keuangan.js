@@ -2,16 +2,39 @@
 // 5. KEUANGAN VIEW
 // ===================================================================
 async function buildKeuanganView() {
-    const { data: transaksis } = await window.api.transaksi.select();
-    
+    const [{ data: transaksis }, { data: pengqurbans }] = await Promise.all([
+        window.api.transaksi.select(),
+        window.api.pengqurban.select()
+    ]);
+
+    const allTransactions = [...(transaksis || [])];
+
+    if (pengqurbans) {
+        pengqurbans.forEach(p => {
+            if (p.setoran && p.setoran > 0) {
+                allTransactions.push({
+                    id: p.id,
+                    nama_transaksi: p.kelompok === 'Kambing' ? `Upah Jagal Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
+                    tanggal: p.created_at || new Date().toISOString(),
+                    jenis: 'pendapatan',
+                    nominal: p.setoran,
+                    is_pengqurban: true
+                });
+            }
+        });
+    }
+
+    // Sort by date descending
+    allTransactions.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
     let totalPendapatan = 0;
     let totalPengeluaran = 0;
-    
-    transaksis.forEach(t => {
-        if(t.jenis === 'pendapatan') totalPendapatan += t.nominal;
+
+    allTransactions.forEach(t => {
+        if (t.jenis === 'pendapatan') totalPendapatan += t.nominal;
         else totalPengeluaran += t.nominal;
     });
-    
+
     const saldo = totalPendapatan - totalPengeluaran;
 
     let html = `
@@ -55,7 +78,7 @@ async function buildKeuanganView() {
 
             <!-- Transactions List -->
             <div class="space-y-3">
-                ${transaksis.length === 0 ? `
+                ${allTransactions.length === 0 ? `
                     <div class="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm">
                         <div class="w-16 h-16 mx-auto bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
                             <i class="ph ph-receipt text-3xl"></i>
@@ -64,9 +87,9 @@ async function buildKeuanganView() {
                     </div>
                 ` : ''}
                 
-                ${transaksis.map(t => {
-                    const isIncome = t.jenis === 'pendapatan';
-                    return `
+                ${allTransactions.map(t => {
+        const isIncome = t.jenis === 'pendapatan';
+        return `
                         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 rounded-2xl ${isIncome ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'} flex items-center justify-center text-xl">
@@ -74,23 +97,28 @@ async function buildKeuanganView() {
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-slate-800">${t.nama_transaksi}</h4>
-                                    <p class="text-xs text-slate-500 font-medium">${new Date(t.tanggal).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
+                                    <p class="text-xs text-slate-500 font-medium">${new Date(t.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                                 </div>
                             </div>
                             <div class="text-right">
                                 <div class="font-bold ${isIncome ? 'text-green-600' : 'text-red-500'}">
                                     ${isIncome ? '+' : '-'}${formatRupiah(t.nominal)}
                                 </div>
-                                ${currentUser ? `
+                                ${currentUser && !t.is_pengqurban ? `
                                     <div class="flex gap-2 justify-end mt-1">
                                         <button class="text-slate-400 hover:text-blue-500 btn-edit-transaksi" data-id="${t.id}"><i class="ph ph-pencil-simple text-sm"></i></button>
                                         <button class="text-slate-400 hover:text-red-500 btn-delete-transaksi" data-id="${t.id}"><i class="ph ph-trash text-sm"></i></button>
                                     </div>
                                 ` : ''}
+                                ${currentUser && t.is_pengqurban ? `
+                                    <div class="mt-1">
+                                        <span class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Otomatis dari Pengqurban</span>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `;
-                }).join('')}
+    }).join('')}
             </div>
         </div>
     `;
@@ -103,7 +131,7 @@ const showFormTransaksi = async (id = null) => {
         const { data } = await window.api.transaksi.select();
         item = data.find(i => i.id === id);
     }
-    
+
     const html = `
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-end sm:items-center justify-center p-0 sm:p-4 opacity-0">
             <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -155,21 +183,21 @@ const showFormTransaksi = async (id = null) => {
 
     document.getElementById('form-transaksi').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const data = {
             nama_transaksi: document.getElementById('ft-nama').value,
             tanggal: document.getElementById('ft-tanggal').value,
             jenis: document.querySelector('input[name="ft-jenis"]:checked').value,
             nominal: parseInt(document.getElementById('ft-nominal').value)
         };
-        
+
         try {
-            if(id) await window.api.transaksi.update(id, data);
+            if (id) await window.api.transaksi.update(id, data);
             else await window.api.transaksi.insert(data);
             showToast('Transaksi berhasil disimpan');
             closeModal();
             renderView('keuangan');
-        } catch(err) {
+        } catch (err) {
             showToast('Gagal menyimpan transaksi', 'error');
         }
     });
@@ -185,7 +213,7 @@ function attachKeuanganListeners() {
     document.querySelectorAll('.btn-delete-transaksi').forEach(btn => {
         btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
-            if(await showConfirm('Hapus Transaksi', 'Yakin ingin menghapus transaksi ini? Saldo akan otomatis disesuaikan.')) {
+            if (await showConfirm('Hapus Transaksi', 'Yakin ingin menghapus transaksi ini? Saldo akan otomatis disesuaikan.')) {
                 try {
                     await window.api.transaksi.delete(id);
                     showToast('Transaksi terhapus');

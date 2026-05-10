@@ -17,23 +17,30 @@ async function buildDistribusiView() {
     const distribusi = distribusiRes.data || [];
 
     let html = `
-        <div class="p-4 space-y-8 pb-24 view-enter">
+        <div class="p-4 space-y-6 pb-24 view-enter">
             <!-- Header -->
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">Distribusi Daging</h2>
-                <p class="text-sm text-slate-500">Kelola penyaluran daging qurban</p>
+                <p class="text-sm text-slate-500 mb-4">Kelola penyaluran daging qurban</p>
+                
+                <!-- Filter Tabs -->
+                <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+                    <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
+                    <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
+                    <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
+                </div>
             </div>
     `;
 
     // -----------------------------------------
     // 1. PENGQURBAN
     // -----------------------------------------
-    html += `<div class="space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+    html += `<div id="distribusi-pengqurban" class="distribusi-section space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-2 mt-2">
                     <h3 class="text-xl font-bold text-slate-800">Pengqurban</h3>
                     <span class="text-xs font-medium bg-green-100 text-green-700 px-2 py-1 rounded-full">${qurbans.length} Orang</span>
                 </div>`;
-                
+
     // Group by kelompok
     const qurbanGroups = [...new Set(qurbans.map(q => q.kelompok))];
     qurbanGroups.forEach(group => {
@@ -74,12 +81,12 @@ async function buildDistribusiView() {
     // -----------------------------------------
     // 2. PANITIA
     // -----------------------------------------
-    html += `<div class="space-y-4 pt-4">
-                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+    html += `<div id="distribusi-panitia" class="distribusi-section space-y-4 hidden">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-2 mt-2">
                     <h3 class="text-xl font-bold text-slate-800">Panitia</h3>
                     <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-1 rounded-full">${panitias.length} Anggota</span>
                 </div>`;
-                
+
     // Group by wilayah
     const panitiaWilayah = [...new Set(panitias.map(p => p.wilayah))];
     panitiaWilayah.forEach(wil => {
@@ -118,14 +125,14 @@ async function buildDistribusiView() {
     // -----------------------------------------
     // 3. PENERIMA WILAYAH
     // -----------------------------------------
-    html += `<div class="space-y-4 pt-4">
-                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+    html += `<div id="distribusi-penerima" class="distribusi-section space-y-4 hidden">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-2 mt-2">
                     <h3 class="text-xl font-bold text-slate-800">Penerima Wilayah</h3>
                 </div>`;
-                
+
     const penerimaWilayah = [...new Set(penerimas.map(p => p.wilayah))];
     html += `<div class="space-y-3 mt-4">`;
-    
+
     penerimaWilayah.forEach(wil => {
         if (wil !== 'Lainnya') {
             const totalPorsi = penerimas.filter(p => p.wilayah === wil).reduce((sum, p) => sum + (p.jumlah || 1), 0);
@@ -179,14 +186,7 @@ async function buildDistribusiView() {
         });
     }
 
-    html += `</div></div>`;
-
-    // Floating Action Button
-    html += `
-        <button id="btn-fab-distribusi" class="fixed bottom-24 right-4 w-14 h-14 bg-qurban-800 text-white rounded-2xl shadow-lg flex items-center justify-center text-2xl hover:bg-qurban-900 transition-all z-40 transform hover:scale-105">
-            <i class="ph ph-paper-plane-right"></i>
-        </button>
-    </div>`;
+    html += `</div></div></div>`;
 
     return html;
 }
@@ -208,8 +208,8 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
     // Cek apakah ada data eksisting untuk kelompok & id/wilayah ini
     let existingData = null;
     if (defaultId || defaultWilayah) {
-        existingData = distribusiData.find(d => 
-            d.kelompok === kelompok && 
+        existingData = distribusiData.find(d =>
+            d.kelompok === kelompok &&
             (defaultId ? d.id_penerima === defaultId : d.wilayah === defaultWilayah && !d.id_penerima)
         );
     }
@@ -313,7 +313,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
             </div>
         </div>
     `;
-    
+
     showModal(html);
 
     // Form logic elements
@@ -354,7 +354,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
             `;
         } else if (kel === 'Penerima') {
             const wilayahs = [...new Set(penerimas.map(p => p.wilayah))];
-            
+
             // if we are editing 'Lainnya' person, we want the defaultWilayah to be 'Lainnya' and defaultId to be set
             let activeWilayah = item.wilayah || '';
             if (!activeWilayah && item.id_penerima) {
@@ -363,7 +363,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
             }
 
             const wilayahOptions = wilayahs.map(w => `<option value="${w}" ${w === activeWilayah ? 'selected' : ''}>${w}</option>`).join('');
-            
+
             innerHtml = `
                 <label class="block text-sm font-medium text-slate-700 mb-1">Wilayah / Nama Penerima</label>
                 <div class="relative mb-3">
@@ -392,7 +392,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
         const kel = kelompokSelect.value;
         infoContainer.classList.add('hidden');
         infoContainer.dataset.requestValue = '';
-        
+
         if (isEdit && item.request) {
             if (kel === 'Pengqurban') {
                 infoTitle.textContent = "Data Pengqurban";
@@ -422,7 +422,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
             const wilayahSelect = document.getElementById('fd-target-wilayah');
             const targetIdSelect = document.getElementById('fd-target-id');
             const wil = wilayahSelect?.value;
-            
+
             if (wil) {
                 if (wil === 'Lainnya') {
                     const tid = targetIdSelect?.value;
@@ -464,13 +464,13 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
     };
 
     kelompokSelect.addEventListener('change', updateTargetDropdown);
-    
+
     // Initial render
     updateTargetDropdown();
 
     document.getElementById('form-distribusi').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const kel = kelompokSelect.value;
         let finalIdPenerima = null;
         let finalWilayah = null;
@@ -478,7 +478,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
         if (kel === 'Penerima') {
             finalWilayah = document.getElementById('fd-target-wilayah')?.value;
             if (!finalWilayah) return showToast('Pilih wilayah!', 'error');
-            
+
             if (finalWilayah === 'Lainnya') {
                 finalIdPenerima = document.getElementById('fd-target-id')?.value;
                 if (!finalIdPenerima) return showToast('Pilih nama penerima!', 'error');
@@ -531,4 +531,29 @@ function attachDistribusiListeners() {
     if (fab) {
         fab.addEventListener('click', () => showFormDistribusi());
     }
+
+    // Filter Logic
+    const filterBtns = document.querySelectorAll('.btn-filter-distribusi');
+    const sections = document.querySelectorAll('.distribusi-section');
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetFilter = e.currentTarget.dataset.filter;
+
+            // Reset buttons
+            filterBtns.forEach(b => {
+                b.classList.remove('bg-qurban-700', 'text-white');
+                b.classList.add('bg-sky-100', 'text-slate-700');
+            });
+
+            // Set active button
+            e.currentTarget.classList.remove('bg-sky-100', 'text-slate-700');
+            e.currentTarget.classList.add('bg-qurban-700', 'text-white');
+
+            // Hide all sections, show target
+            sections.forEach(sec => sec.classList.add('hidden'));
+            const targetSection = document.getElementById(`distribusi-${targetFilter}`);
+            if(targetSection) targetSection.classList.remove('hidden');
+        });
+    });
 }
