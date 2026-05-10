@@ -32,6 +32,12 @@ async function buildPanitiaView() {
                     </button>
                 ` : ''}
             </div>
+            
+            <!-- Redirect to Absensi -->
+            <button onclick="document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active', 'text-qurban-700'); b.classList.add('text-slate-400')}); renderView('absensi')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-2xl transition-colors flex items-center justify-center gap-2 border border-slate-200">
+                <i class="ph ph-calendar-check text-xl text-qurban-600"></i>
+                <span>Kelola Absensi Panitia</span>
+            </button>
     `;
 
     // Group by tugas

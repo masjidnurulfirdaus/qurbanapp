@@ -1,4 +1,9 @@
 // Constants
+const HARGA_SAPI = 3500000;
+const HARGA_KAMBING = 75000;
+const PERMINTAAN_SAPI = "Daging 4 kg + 3 bungkus (sapi/kambing)";
+const PERMINTAAN_KAMBING = "Sampil + hati setengah";
+
 const WILAYAH_OPTIONS = [
     "RT 1 RW 6", "RT 2 RW 6", "RT 3 RW 6", "RT 4 RW 6", "RT 5 RW 6", "RT 6 RW 6",
     "RT 1 RW 7", "RT 2 RW 7", "RT 3 RW 7", "RT 4 RW 7", "RT 2 RW 12", "Lainnya"
@@ -319,9 +324,14 @@ async function buildPengqurbanView() {
                                     ${m.nama.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                    <div class="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                                        ${m.nama}
-                                        ${m.status_lunas ? '<i class="ph-fill ph-check-circle text-qurban-500 text-xs" title="Lunas"></i>' : ''}
+                                    <div class="text-sm font-semibold text-slate-800 flex flex-col gap-1 mb-1">
+                                        <div class="flex items-center gap-2">
+                                            ${m.nama}
+                                            ${m.status_lunas
+                ? '<span class="bg-qurban-100 text-qurban-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Lunas</span>'
+                : `<span class="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-full font-bold">${formatRupiah(m.setoran || 0)} / ${formatRupiah(HARGA_SAPI)}</span>`
+            }
+                                        </div>
                                     </div>
                                     <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah === 'Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
                                 </div>
@@ -370,9 +380,14 @@ async function buildPengqurbanView() {
                                 ${m.nama.substring(0, 2).toUpperCase()}
                             </div>
                             <div>
-                                <div class="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                                    ${m.nama}
-                                    ${m.status_lunas ? '<i class="ph-fill ph-check-circle text-qurban-500 text-xs" title="Lunas"></i>' : ''}
+                                <div class="text-sm font-semibold text-slate-800 flex flex-col gap-1 mb-1">
+                                    <div class="flex items-center gap-2">
+                                        ${m.nama}
+                                        ${m.status_lunas
+            ? '<span class="bg-qurban-100 text-qurban-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Lunas</span>'
+            : `<span class="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-full font-bold">${formatRupiah(m.setoran || 0)} / ${formatRupiah(HARGA_KAMBING)}</span>`
+        }
+                                    </div>
                                 </div>
                                 <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah === 'Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
                             </div>
@@ -394,10 +409,20 @@ async function buildPengqurbanView() {
 
 // Form Pengqurban
 const showFormPengqurban = async (id = null, defaultKelompok = null) => {
-    let item = { nama: '', wilayah: '', alamat: '', no_telp: '', kelompok: defaultKelompok || KELOMPOK_OPTIONS[0], status_lunas: false };
+    let item = {
+        nama: '',
+        wilayah: '',
+        alamat: '',
+        no_telp: '',
+        kelompok: defaultKelompok || KELOMPOK_OPTIONS[0],
+        status_lunas: true,
+        setoran: 0,
+        permintaan_daging: ''
+    };
     if (id) {
         const { data } = await window.api.pengqurban.select();
-        item = data.find(i => i.id === id);
+        const found = data.find(i => i.id === id);
+        if (found) item = { ...item, ...found };
     }
 
     const html = `
@@ -442,6 +467,14 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
                             </div>
                             <span class="text-sm font-medium text-slate-700">Status Lunas</span>
                         </label>
+                        <div id="fq-setoran-container" class="${item.status_lunas ? 'hidden' : ''}">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Jumlah Setoran (Rp)</label>
+                            <input type="number" id="fq-setoran" value="${item.setoran || ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none" placeholder="Masukkan jumlah uang dibayarkan">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Permintaan Daging</label>
+                            <textarea id="fq-permintaan" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none" placeholder="Otomatis diisi, bisa diubah">${item.permintaan_daging || ''}</textarea>
+                        </div>
                         <button type="submit" class="w-full bg-qurban-700 hover:bg-qurban-800 text-white font-medium py-3 rounded-xl transition-colors mt-6">
                             Simpan Data
                         </button>
@@ -460,15 +493,65 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
         else alContainer.classList.add('hidden');
     });
 
+    const lunasCheck = document.getElementById('fq-lunas');
+    const setoranContainer = document.getElementById('fq-setoran-container');
+    const setoranInput = document.getElementById('fq-setoran');
+    const kelompokSelect = document.getElementById('fq-kelompok');
+    const permintaanInput = document.getElementById('fq-permintaan');
+
+    const updateSetoranVisibility = () => {
+        if (lunasCheck.checked) {
+            setoranContainer.classList.add('hidden');
+        } else {
+            setoranContainer.classList.remove('hidden');
+        }
+    };
+
+    const updateDefaults = () => {
+        const isSapi = kelompokSelect.value.includes('Sapi');
+        const defaultPermintaan = isSapi ? PERMINTAAN_SAPI : PERMINTAAN_KAMBING;
+
+        // Auto fill permintaan if empty or matching previous default
+        if (!permintaanInput.value || permintaanInput.value === PERMINTAAN_SAPI || permintaanInput.value === PERMINTAAN_KAMBING) {
+            permintaanInput.value = defaultPermintaan;
+        }
+    };
+
+    lunasCheck.addEventListener('change', updateSetoranVisibility);
+    kelompokSelect.addEventListener('change', updateDefaults);
+
+    // Call once to set initial defaults for new records
+    if (!id) {
+        updateDefaults();
+    }
+
     document.getElementById('form-pengqurban').addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        let isLunas = lunasCheck.checked;
+        const kelompok = kelompokSelect.value;
+        const targetHarga = kelompok.includes('Sapi') ? HARGA_SAPI : HARGA_KAMBING;
+
+        let setoran = parseInt(setoranInput.value) || 0;
+
+        if (isLunas) {
+            setoran = targetHarga;
+        } else {
+            if (setoran >= targetHarga) {
+                isLunas = true;
+                setoran = targetHarga;
+            }
+        }
+
         const data = {
-            kelompok: document.getElementById('fq-kelompok').value,
+            kelompok: kelompok,
             nama: document.getElementById('fq-nama').value,
             wilayah: document.getElementById('fq-wilayah').value,
             alamat: document.getElementById('fq-wilayah').value === 'Lainnya' ? document.getElementById('fq-alamat').value : '',
             no_telp: document.getElementById('fq-notelp').value,
-            status_lunas: document.getElementById('fq-lunas').checked
+            status_lunas: isLunas,
+            setoran: setoran,
+            permintaan_daging: permintaanInput.value
         };
 
         try {
