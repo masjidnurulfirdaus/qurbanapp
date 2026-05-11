@@ -61,7 +61,7 @@ const db = {
                 return { user: data };
             } else {
                 const user = mockData.pengguna.find(u => u.username === username);
-                if (user && password === 'nfadmin') { // hardcoded mock pass
+                if (user && password === 'admin123') { // hardcoded mock pass
                     return { user };
                 }
                 throw new Error("Invalid credentials (Mock: try admin/admin123)");
