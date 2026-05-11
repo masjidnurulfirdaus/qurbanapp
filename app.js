@@ -77,10 +77,10 @@ const showModal = (htmlContent) => {
     requestAnimationFrame(() => modal.classList.add('modal-enter'));
 
     // Add close listener
-    const closeBtn = modal.querySelector('.modal-close-btn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
+    const closeBtns = modal.querySelectorAll('.modal-close-btn');
+    closeBtns.forEach(btn => {
+        btn.addEventListener('click', closeModal);
+    });
     // Close on backdrop click
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
