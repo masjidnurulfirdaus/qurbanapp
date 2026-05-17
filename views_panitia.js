@@ -4,6 +4,7 @@
 let currentPanitiasData = [];
 let currentPanitiaGroupBy = 'tugas';
 let currentPanitiaSearch = '';
+let highlightedPanitiaIds = new Set();
 
 async function buildPanitiaView() {
     const { data: panitias } = await window.api.panitia.select();
@@ -137,8 +138,12 @@ function generatePanitiaListHTML() {
 }
 
 function renderPanitiaCard(m) {
+    const isHighlighted = highlightedPanitiaIds.has(m.id.toString());
+    const bgClass = isHighlighted ? 'bg-qurban-50' : 'bg-white';
+    const borderClass = isHighlighted ? 'border-qurban-300' : 'border-slate-100';
+
     return `
-        <div class="panitia-card bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group cursor-pointer transition-colors duration-200">
+        <div class="panitia-card ${bgClass} rounded-2xl p-4 shadow-sm border ${borderClass} flex justify-between items-center group cursor-pointer transition-colors duration-200" data-id="${m.id}">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold min-w-[3rem]">
                     ${m.nama.substring(0, 2).toUpperCase()}
@@ -254,10 +259,17 @@ function attachPanitiaCardListeners() {
         card.addEventListener('click', (e) => {
             if (e.target.closest('button')) return; // ignore if clicking buttons
             
-            card.classList.toggle('bg-white');
-            card.classList.toggle('bg-qurban-50');
-            card.classList.toggle('border-slate-100');
-            card.classList.toggle('border-qurban-300');
+            const id = card.dataset.id;
+            
+            if (highlightedPanitiaIds.has(id)) {
+                highlightedPanitiaIds.delete(id);
+                card.classList.remove('bg-qurban-50', 'border-qurban-300');
+                card.classList.add('bg-white', 'border-slate-100');
+            } else {
+                highlightedPanitiaIds.add(id);
+                card.classList.remove('bg-white', 'border-slate-100');
+                card.classList.add('bg-qurban-50', 'border-qurban-300');
+            }
         });
     });
 
