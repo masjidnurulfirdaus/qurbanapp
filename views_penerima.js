@@ -49,11 +49,9 @@ async function buildPenerimaView() {
             <div class="flex justify-between items-end mt-4">
                 <h3 class="text-xl font-bold text-qurban-800">Daftar Penerima</h3>
                 ${currentUser ? `
-                    <div class="flex gap-2">
-                        <button class="bg-qurban-700 hover:bg-qurban-800 text-white px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2 btn-add-penerima">
-                            <i class="ph ph-user-plus"></i> <span class="hidden sm:inline">Tambah</span>
-                        </button>
-                    </div>
+                    <button class="bg-qurban-700 hover:bg-qurban-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2 btn-add-penerima">
+                        <i class="ph ph-user-plus"></i> Tambah
+                    </button>
                 ` : ''}
             </div>
 
