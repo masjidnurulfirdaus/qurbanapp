@@ -55,37 +55,40 @@ async function buildAbsensiView() {
         `;
     }
 
-    Object.keys(byWilayah).sort().forEach(wilayah => {
+    WILAYAH_OPTIONS.forEach(wilayah => {
         const members = byWilayah[wilayah];
-        html += `
-            <div class="mt-6">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3 px-1">
-                    <i class="ph ph-map-pin text-qurban-600"></i> ${wilayah}
-                </h3>
-                <div class="space-y-2">
-                    ${members.map(m => `
-                        <div class="bg-white rounded-2xl p-3 px-4 shadow-sm border border-slate-100 flex justify-between items-center transition-colors ${m.hadir ? 'border-l-4 border-l-qurban-500' : ''}">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full ${m.hadir ? 'bg-qurban-50 text-qurban-600' : 'bg-slate-100 text-slate-400'} flex items-center justify-center text-sm font-bold transition-colors">
-                                    ${m.nama.substring(0, 2).toUpperCase()}
+
+        if (members && members.length > 0) {
+            html += `
+                <div class="mt-6">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3 px-1">
+                        <i class="ph ph-map-pin text-qurban-600"></i> ${wilayah}
+                    </h3>
+                    <div class="space-y-2">
+                        ${members.map(m => `
+                            <div class="bg-white rounded-2xl p-3 px-4 shadow-sm border border-slate-100 flex justify-between items-center transition-colors ${m.hadir ? 'border-l-4 border-l-qurban-500' : ''}">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full ${m.hadir ? 'bg-qurban-50 text-qurban-600' : 'bg-slate-100 text-slate-400'} flex items-center justify-center text-sm font-bold transition-colors">
+                                        ${m.nama.substring(0, 2).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">${m.nama}</h4>
+                                        <p class="text-[10px] text-slate-500">${m.tugas.join(', ')}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 text-sm">${m.nama}</h4>
-                                    <p class="text-[10px] text-slate-500">${m.tugas.join(', ')}</p>
-                                </div>
+                                
+                                ${currentUser ? `
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer toggle-absensi" data-id="${m.id}" ${m.hadir ? 'checked' : ''}>
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-qurban-600 transition-colors"></div>
+                                    </label>
+                                ` : ``}
                             </div>
-                            
-                            ${currentUser ? `
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer toggle-absensi" data-id="${m.id}" ${m.hadir ? 'checked' : ''}>
-                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-qurban-600 transition-colors"></div>
-                                </label>
-                            ` : ``}
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     });
 
     html += `</div>`;

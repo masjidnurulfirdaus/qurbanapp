@@ -42,7 +42,6 @@ async function buildDistribusiView() {
                 </div>`;
 
     // Group by kelompok
-    // const qurbanGroups = [...new Set(qurbans.map(q => q.kelompok))];
 
     KELOMPOK_OPTIONS.forEach(group => {
         const members = qurbans.filter(q => q.kelompok === group);
@@ -91,8 +90,7 @@ async function buildDistribusiView() {
                 </div>`;
 
     // Group by wilayah
-    const panitiaWilayah = [...new Set(panitias.map(p => p.wilayah))];
-    panitiaWilayah.forEach(wil => {
+    WILAYAH_OPTIONS.forEach(wil => {
         const members = panitias.filter(p => p.wilayah === wil);
         if (members.length > 0) {
             html += `<div class="mt-4">

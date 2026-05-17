@@ -117,7 +117,6 @@ function generatePanitiaListHTML() {
             }
         });
     } else {
-        // const wilayahs = [...new Set(filtered.map(p => p.wilayah))].sort();
         WILAYAH_OPTIONS.forEach(wil => {
             const members = filtered.filter(p => p.wilayah === wil);
             members.sort((a, b) => (b.is_koordinator ? 1 : 0) - (a.is_koordinator ? 1 : 0));
