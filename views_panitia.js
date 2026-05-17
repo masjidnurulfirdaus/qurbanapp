@@ -117,8 +117,8 @@ function generatePanitiaListHTML() {
             }
         });
     } else {
-        const wilayahs = [...new Set(filtered.map(p => p.wilayah))].sort();
-        wilayahs.forEach(wil => {
+        // const wilayahs = [...new Set(filtered.map(p => p.wilayah))].sort();
+        WILAYAH_OPTIONS.forEach(wil => {
             const members = filtered.filter(p => p.wilayah === wil);
             members.sort((a, b) => (b.is_koordinator ? 1 : 0) - (a.is_koordinator ? 1 : 0));
 
@@ -264,9 +264,9 @@ function attachPanitiaCardListeners() {
     document.querySelectorAll('.panitia-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('button')) return; // ignore if clicking buttons
-            
+
             const id = card.dataset.id;
-            
+
             if (highlightedPanitiaIds.has(id)) {
                 highlightedPanitiaIds.delete(id);
                 card.classList.remove('bg-qurban-50', 'border-qurban-300');
@@ -306,7 +306,7 @@ function attachPanitiaListeners() {
         btnDownload.addEventListener('click', async () => {
             try {
                 if (!currentPanitiasData || currentPanitiasData.length === 0) return showToast('Data kosong', 'error');
-                
+
                 // Exclude 'id' from data
                 const exportData = currentPanitiasData.map(item => {
                     const { id, ...rest } = item;
@@ -321,11 +321,11 @@ function attachPanitiaListeners() {
                 const ws = XLSX.utils.json_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Panitia");
-                
+
                 // Trigger download
                 XLSX.writeFile(wb, "Laporan_Panitia.xlsx");
                 showToast('Laporan berhasil diunduh!');
-            } catch(err) {
+            } catch (err) {
                 showToast('Gagal mengunduh laporan: ' + err.message, 'error');
             }
         });

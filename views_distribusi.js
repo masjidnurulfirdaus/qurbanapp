@@ -42,8 +42,9 @@ async function buildDistribusiView() {
                 </div>`;
 
     // Group by kelompok
-    const qurbanGroups = [...new Set(qurbans.map(q => q.kelompok))];
-    qurbanGroups.forEach(group => {
+    // const qurbanGroups = [...new Set(qurbans.map(q => q.kelompok))];
+
+    KELOMPOK_OPTIONS.forEach(group => {
         const members = qurbans.filter(q => q.kelompok === group);
         if (members.length > 0) {
             html += `<div class="mt-4">
