@@ -43,9 +43,14 @@ async function buildPenerimaView() {
             <div class="flex justify-between items-end mt-4">
                 <h3 class="text-xl font-bold text-qurban-800">Daftar Penerima</h3>
                 ${currentUser ? `
-                    <button class="bg-qurban-700 hover:bg-qurban-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2 btn-add-penerima">
-                        <i class="ph ph-user-plus"></i> Tambah
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="btn-download-penerima" class="bg-white hover:bg-slate-50 text-slate-700 px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm border border-slate-200 flex items-center gap-2">
+                            <i class="ph ph-download-simple"></i> <span class="hidden sm:inline">Excel</span>
+                        </button>
+                        <button class="bg-qurban-700 hover:bg-qurban-800 text-white px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2 btn-add-penerima">
+                            <i class="ph ph-user-plus"></i> <span class="hidden sm:inline">Tambah</span>
+                        </button>
+                    </div>
                 ` : ''}
             </div>
 
@@ -183,6 +188,34 @@ const showFormPenerima = async (id = null) => {
 };
 
 function attachPenerimaListeners() {
+    // Excel Download
+    const btnDownload = document.getElementById('btn-download-penerima');
+    if (btnDownload) {
+        btnDownload.addEventListener('click', async () => {
+            try {
+                const { data } = await window.api.penerima.select();
+                if (!data || data.length === 0) return showToast('Data kosong', 'error');
+                
+                // Exclude 'id' from data
+                const exportData = data.map(item => {
+                    const { id, ...rest } = item;
+                    return rest;
+                });
+
+                // Create worksheet and workbook using SheetJS
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Penerima");
+                
+                // Trigger download
+                XLSX.writeFile(wb, "Laporan_Penerima.xlsx");
+                showToast('Laporan berhasil diunduh!');
+            } catch(err) {
+                showToast('Gagal mengunduh laporan: ' + err.message, 'error');
+            }
+        });
+    }
+
     const filterSelect = document.getElementById('filter-wilayah');
     if (filterSelect) {
         filterSelect.addEventListener('change', (e) => {

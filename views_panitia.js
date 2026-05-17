@@ -36,9 +36,15 @@ async function buildPanitiaView() {
                         </div>
                     </div>
                     ${currentUser ? `
-                        <button class="w-12 h-12 bg-white text-qurban-700 rounded-xl shadow-md flex items-center justify-center text-xl hover:bg-qurban-50 transition-colors z-10 btn-add-panitia">
-                            <i class="ph ph-plus font-bold"></i>
-                        </button>
+                        <div class="flex flex-col gap-2 z-10 items-end">
+                            <button class="w-12 h-12 bg-white text-qurban-700 rounded-xl shadow-md flex items-center justify-center text-xl hover:bg-qurban-50 transition-colors btn-add-panitia">
+                                <i class="ph ph-plus font-bold"></i>
+                            </button>
+                            <button id="btn-download-panitia" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
+                                <i class="ph ph-download-simple text-lg"></i>
+                                <span>Excel</span>
+                            </button>
+                        </div>
                     ` : ''}
                 </div>
                 <!-- Redirect to Absensi -->
@@ -294,6 +300,37 @@ function attachPanitiaCardListeners() {
 }
 
 function attachPanitiaListeners() {
+    // Excel Download
+    const btnDownload = document.getElementById('btn-download-panitia');
+    if (btnDownload) {
+        btnDownload.addEventListener('click', async () => {
+            try {
+                if (!currentPanitiasData || currentPanitiasData.length === 0) return showToast('Data kosong', 'error');
+                
+                // Exclude 'id' from data
+                const exportData = currentPanitiasData.map(item => {
+                    const { id, ...rest } = item;
+                    // Format tugas array to string if necessary
+                    if (Array.isArray(rest.tugas)) {
+                        rest.tugas = rest.tugas.join(', ');
+                    }
+                    return rest;
+                });
+
+                // Create worksheet and workbook using SheetJS
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Panitia");
+                
+                // Trigger download
+                XLSX.writeFile(wb, "Laporan_Panitia.xlsx");
+                showToast('Laporan berhasil diunduh!');
+            } catch(err) {
+                showToast('Gagal mengunduh laporan: ' + err.message, 'error');
+            }
+        });
+    }
+
     // Add panitia modal
     document.querySelectorAll('.btn-add-panitia').forEach(btn => {
         btn.addEventListener('click', () => showFormPanitia());
