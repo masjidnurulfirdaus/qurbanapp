@@ -71,10 +71,10 @@ async function buildPanitiaView() {
 function generatePanitiaListHTML() {
     let html = '';
     const search = currentPanitiaSearch.toLowerCase();
-    
+
     // Filter panitias by search query
     let filtered = currentPanitiasData.filter(p => p.nama.toLowerCase().includes(search));
-    
+
     if (filtered.length === 0) {
         return `<div class="text-center py-8 text-slate-400 text-sm">Tidak ada panitia yang sesuai.</div>`;
     }
@@ -100,7 +100,7 @@ function generatePanitiaListHTML() {
                             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                                 <i class="ph ${icon} text-qurban-600 text-xl"></i> ${tugas}
                             </h3>
-                            <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${members.length > 2 ? members.length + \` Orang\` : \`\`}</span>
+                            <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${members.length > 2 ? members.length + ` Orang` : ''}</span>
                         </div>
                         <div class="space-y-3">
                             ${members.map(m => renderPanitiaCard(m)).join('')}
@@ -132,7 +132,7 @@ function generatePanitiaListHTML() {
             }
         });
     }
-    
+
     return html;
 }
 
@@ -146,20 +146,20 @@ function renderPanitiaCard(m) {
                 <div>
                     <div class="flex items-center gap-2">
                         <h4 class="font-bold text-slate-800">${m.nama}</h4>
-                        ${m.is_koordinator ? \`<span class="bg-qurban-700 text-white text-[9px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Koordinator</span>\` : ''}
+                        ${m.is_koordinator ? `<span class="bg-qurban-700 text-white text-[9px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Koordinator</span>` : ''}
                     </div>
                     <p class="text-xs text-slate-500 mt-0.5"><i class="ph ph-map-pin"></i> ${m.wilayah}</p>
                     <div class="flex flex-wrap gap-1 mt-2">
-                        ${m.tugas.map(t => \`<span class="text-[10px] border border-blue-100 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">\${t}</span>\`).join('')}
+                        ${m.tugas.map(t => `<span class="text-[10px] border border-blue-100 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">${t}</span>`).join('')}
                     </div>
                 </div>
             </div>
-            ${currentUser ? \`
+            ${currentUser ? `
                 <div class="flex gap-1 flex-col md:flex-row">
-                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-panitia" data-id="\${m.id}"><i class="ph ph-pencil-simple"></i></button>
-                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-panitia" data-id="\${m.id}"><i class="ph ph-trash"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-panitia" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-panitia" data-id="${m.id}"><i class="ph ph-trash"></i></button>
                 </div>
-            \` : ''}
+            ` : ''}
         </div>
     `;
 }
@@ -294,7 +294,7 @@ function attachPanitiaListeners() {
     toggleBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             currentPanitiaGroupBy = e.currentTarget.dataset.group;
-            
+
             // update classes
             toggleBtns.forEach(b => {
                 b.classList.remove('bg-white', 'text-qurban-700', 'shadow-sm');
