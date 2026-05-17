@@ -138,7 +138,7 @@ function generatePanitiaListHTML() {
 
 function renderPanitiaCard(m) {
     return `
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group">
+        <div class="panitia-card bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group cursor-pointer transition-colors duration-200">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold min-w-[3rem]">
                     ${m.nama.substring(0, 2).toUpperCase()}
@@ -250,6 +250,17 @@ const showFormPanitia = async (id = null) => {
 };
 
 function attachPanitiaCardListeners() {
+    document.querySelectorAll('.panitia-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return; // ignore if clicking buttons
+            
+            card.classList.toggle('bg-white');
+            card.classList.toggle('bg-qurban-50');
+            card.classList.toggle('border-slate-100');
+            card.classList.toggle('border-qurban-300');
+        });
+    });
+
     document.querySelectorAll('.btn-edit-panitia').forEach(btn => {
         btn.addEventListener('click', () => showFormPanitia(btn.dataset.id));
     });
