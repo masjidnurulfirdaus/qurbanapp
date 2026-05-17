@@ -1,11 +1,18 @@
 // ===================================================================
 // 3. PANITIA VIEW
 // ===================================================================
+let currentPanitiasData = [];
+let currentPanitiaGroupBy = 'tugas';
+let currentPanitiaSearch = '';
+
 async function buildPanitiaView() {
     const { data: panitias } = await window.api.panitia.select();
+    currentPanitiasData = panitias || [];
+    currentPanitiaGroupBy = 'tugas';
+    currentPanitiaSearch = '';
 
-    const activeCount = panitias.length;
-    const relawanCount = panitias.filter(p => p.tugas.includes('Relawan')).length;
+    const activeCount = currentPanitiasData.length;
+    const relawanCount = currentPanitiasData.filter(p => p.tugas.includes('Relawan')).length;
     const panitiaCount = activeCount - relawanCount;
 
     let html = `
@@ -39,67 +46,122 @@ async function buildPanitiaView() {
                     <span>Kelola Absensi Panitia</span>
                 </button>                
             </div>
+
+            <!-- Controls: Search & Toggle -->
+            <div class="space-y-3">
+                <div class="relative">
+                    <input type="text" id="search-panitia" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-qurban-500 focus:ring-1 focus:ring-qurban-500 transition-all text-sm" placeholder="Cari nama panitia...">
+                    <i class="ph ph-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-lg"></i>
+                </div>
+                <div class="flex bg-slate-100 p-1 rounded-xl">
+                    <button class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white text-qurban-700 shadow-sm transition-all btn-toggle-group" data-group="tugas">Per Tugas</button>
+                    <button class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-all btn-toggle-group" data-group="wilayah">Per Wilayah</button>
+                </div>
+            </div>
+
+            <!-- List Container -->
+            <div id="panitia-list-container">
+                ${generatePanitiaListHTML()}
+            </div>
+        </div>
     `;
+    return html;
+}
 
-    // Group by tugas
-    TUGAS_OPTIONS.forEach(tugas => {
-        // filter panitia who have this tugas
-        const members = panitias.filter(p => p.tugas.includes(tugas));
-        // Sort: Koordinator first
-        members.sort((a, b) => (b.is_koordinator ? 1 : 0) - (a.is_koordinator ? 1 : 0));
+function generatePanitiaListHTML() {
+    let html = '';
+    const search = currentPanitiaSearch.toLowerCase();
+    
+    // Filter panitias by search query
+    let filtered = currentPanitiasData.filter(p => p.nama.toLowerCase().includes(search));
+    
+    if (filtered.length === 0) {
+        return `<div class="text-center py-8 text-slate-400 text-sm">Tidak ada panitia yang sesuai.</div>`;
+    }
 
-        if (members.length > 0) {
-            let icon = 'ph-users';
-            if (tugas === 'Ketua') icon = 'ph-star';
-            else if (tugas === 'Bendahara') icon = 'ph-wallet';
-            else if (tugas === 'Sekretaris') icon = 'ph-notebook';
-            else if (tugas === 'Penyembelihan') icon = 'ph-scissors';
-            else if (tugas === 'Pencacahan') icon = 'ph-knife';
-            else if (tugas === 'Penimbangan') icon = 'ph-scales';
-            else if (tugas === 'Distribusi') icon = 'ph-truck';
+    if (currentPanitiaGroupBy === 'tugas') {
+        TUGAS_OPTIONS.forEach(tugas => {
+            const members = filtered.filter(p => p.tugas.includes(tugas));
+            members.sort((a, b) => (b.is_koordinator ? 1 : 0) - (a.is_koordinator ? 1 : 0));
 
-            html += `
-                <div class="mt-6">
-                    <div class="flex justify-between items-center mb-3 px-1">
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                            <i class="ph ${icon} text-qurban-600 text-xl"></i> ${tugas}
-                        </h3>
-                        <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${members.length > 2 ? members.length + ` Orang` : ``}</span>
+            if (members.length > 0) {
+                let icon = 'ph-users';
+                if (tugas === 'Ketua') icon = 'ph-star';
+                else if (tugas === 'Bendahara') icon = 'ph-wallet';
+                else if (tugas === 'Sekretaris') icon = 'ph-notebook';
+                else if (tugas === 'Penyembelihan') icon = 'ph-scissors';
+                else if (tugas === 'Pencacahan') icon = 'ph-knife';
+                else if (tugas === 'Penimbangan') icon = 'ph-scales';
+                else if (tugas === 'Distribusi') icon = 'ph-truck';
+
+                html += `
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-3 px-1">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="ph ${icon} text-qurban-600 text-xl"></i> ${tugas}
+                            </h3>
+                            <span class="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${members.length > 2 ? members.length + \` Orang\` : \`\`}</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${members.map(m => renderPanitiaCard(m)).join('')}
+                        </div>
                     </div>
-                    <div class="space-y-3">
-                        ${members.map(m => `
-                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold">
-                                        ${m.nama.substring(0, 2).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <h4 class="font-bold text-slate-800">${m.nama}</h4>
-                                            ${m.is_koordinator ? `<span class="bg-qurban-700 text-white text-[9px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Koordinator</span>` : ''}
-                                        </div>
-                                        <p class="text-xs text-slate-500 mt-0.5"><i class="ph ph-map-pin"></i> ${m.wilayah}</p>
-                                        <div class="flex flex-wrap gap-1 mt-2">
-                                            ${m.tugas.map(t => `<span class="text-[10px] border border-blue-100 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">${t}</span>`).join('')}
-                                        </div>
-                                    </div>
-                                </div>
-                                ${currentUser ? `
-                                    <div class="flex gap-1 flex-col md:flex-row">
-                                        <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-panitia" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
-                                        <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-panitia" data-id="${m.id}"><i class="ph ph-trash"></i></button>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `).join('')}
+                `;
+            }
+        });
+    } else {
+        const wilayahs = [...new Set(filtered.map(p => p.wilayah))].sort();
+        wilayahs.forEach(wil => {
+            const members = filtered.filter(p => p.wilayah === wil);
+            members.sort((a, b) => (b.is_koordinator ? 1 : 0) - (a.is_koordinator ? 1 : 0));
+
+            if (members.length > 0) {
+                html += `
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-3 px-1">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="ph ph-map-pin text-qurban-600 text-xl"></i> ${wil}
+                            </h3>
+                            <span class="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">${members.length} Orang</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${members.map(m => renderPanitiaCard(m)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+    
+    return html;
+}
+
+function renderPanitiaCard(m) {
+    return `
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold min-w-[3rem]">
+                    ${m.nama.substring(0, 2).toUpperCase()}
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h4 class="font-bold text-slate-800">${m.nama}</h4>
+                        ${m.is_koordinator ? \`<span class="bg-qurban-700 text-white text-[9px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Koordinator</span>\` : ''}
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5"><i class="ph ph-map-pin"></i> ${m.wilayah}</p>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                        ${m.tugas.map(t => \`<span class="text-[10px] border border-blue-100 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">\${t}</span>\`).join('')}
                     </div>
                 </div>
-            `;
-        }
-    });
-
-    html += `</div>`;
-    return html;
+            </div>
+            ${currentUser ? \`
+                <div class="flex gap-1 flex-col md:flex-row">
+                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-panitia" data-id="\${m.id}"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-panitia" data-id="\${m.id}"><i class="ph ph-trash"></i></button>
+                </div>
+            \` : ''}
+        </div>
+    `;
 }
 
 const showFormPanitia = async (id = null) => {
@@ -187,10 +249,7 @@ const showFormPanitia = async (id = null) => {
     });
 };
 
-function attachPanitiaListeners() {
-    document.querySelectorAll('.btn-add-panitia').forEach(btn => {
-        btn.addEventListener('click', () => showFormPanitia());
-    });
+function attachPanitiaCardListeners() {
     document.querySelectorAll('.btn-edit-panitia').forEach(btn => {
         btn.addEventListener('click', () => showFormPanitia(btn.dataset.id));
     });
@@ -209,4 +268,49 @@ function attachPanitiaListeners() {
             }
         });
     });
+}
+
+function attachPanitiaListeners() {
+    // Add panitia modal
+    document.querySelectorAll('.btn-add-panitia').forEach(btn => {
+        btn.addEventListener('click', () => showFormPanitia());
+    });
+
+    // Search
+    const searchInput = document.getElementById('search-panitia');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            currentPanitiaSearch = e.target.value;
+            const container = document.getElementById('panitia-list-container');
+            if (container) {
+                container.innerHTML = generatePanitiaListHTML();
+                attachPanitiaCardListeners();
+            }
+        });
+    }
+
+    // Toggle Group
+    const toggleBtns = document.querySelectorAll('.btn-toggle-group');
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentPanitiaGroupBy = e.currentTarget.dataset.group;
+            
+            // update classes
+            toggleBtns.forEach(b => {
+                b.classList.remove('bg-white', 'text-qurban-700', 'shadow-sm');
+                b.classList.add('text-slate-500');
+            });
+            e.currentTarget.classList.remove('text-slate-500');
+            e.currentTarget.classList.add('bg-white', 'text-qurban-700', 'shadow-sm');
+
+            const container = document.getElementById('panitia-list-container');
+            if (container) {
+                container.innerHTML = generatePanitiaListHTML();
+                attachPanitiaCardListeners();
+            }
+        });
+    });
+
+    // Initial card listeners
+    attachPanitiaCardListeners();
 }
