@@ -270,9 +270,19 @@ async function buildPengqurbanView() {
                 <div class="absolute -right-4 -bottom-4 opacity-10">
                     <i class="ph ph-cow text-9xl"></i>
                 </div>
-                <h2 class="text-sm font-medium text-qurban-100 mb-1">DASHBOARD OVERVIEW</h2>
-                <h3 class="text-2xl font-bold mb-4">Progress Qurban</h3>
-                <div class="flex gap-6">
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <h2 class="text-sm font-medium text-qurban-100 mb-1">DASHBOARD OVERVIEW</h2>
+                        <h3 class="text-2xl font-bold mb-4">Progress Qurban</h3>
+                    </div>
+                    ${currentUser ? `
+                    <button id="btn-download-pengqurban" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
+                        <i class="ph ph-download-simple text-lg"></i>
+                        <span>Excel</span>
+                    </button>
+                    ` : ''}
+                </div>
+                <div class="flex gap-6 relative z-10">
                     <div>
                         <div class="text-3xl font-bold">${totalHewanSapi}</div>
                         <div class="text-xs text-qurban-200">Sapi</div>
@@ -572,6 +582,33 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
 // ===================================================================
 function attachViewListeners(view) {
     if (view === 'pengqurban') {
+        const btnDownload = document.getElementById('btn-download-pengqurban');
+        if (btnDownload) {
+            btnDownload.addEventListener('click', async () => {
+                try {
+                    const { data } = await window.api.pengqurban.select();
+                    if (!data || data.length === 0) return showToast('Data kosong', 'error');
+                    
+                    // Exclude 'id' from data
+                    const exportData = data.map(item => {
+                        const { id, ...rest } = item;
+                        return rest;
+                    });
+
+                    // Create worksheet and workbook using SheetJS
+                    const ws = XLSX.utils.json_to_sheet(exportData);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Pengqurban");
+                    
+                    // Trigger download
+                    XLSX.writeFile(wb, "Laporan_Pengqurban.xlsx");
+                    showToast('Laporan berhasil diunduh!');
+                } catch(err) {
+                    showToast('Gagal mengunduh laporan: ' + err.message, 'error');
+                }
+            });
+        }
+
         document.querySelectorAll('.btn-add-qurban').forEach(btn => {
             btn.addEventListener('click', (e) => showFormPengqurban(null, e.currentTarget.dataset.kel));
         });
