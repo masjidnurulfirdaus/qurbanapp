@@ -19,7 +19,7 @@ async function buildDistribusiView() {
     // Calculation
     const pengqurbanSapi = qurbans.filter(q => q.kelompok.startsWith('Sapi'));
     const pengqurbanSapiCount = pengqurbanSapi.length;
-    
+
     // Kebutuhan Porsi KG
     let kebutuhanPorsiKg = pengqurbanSapiCount * 4;
     kebutuhanPorsiKg += penerimas.reduce((acc, p) => acc + (p.jumlah_kg || 0), 0);
@@ -91,7 +91,7 @@ async function buildDistribusiView() {
                                     <span class="text-[10px] font-bold text-amber-900 mb-1.5">porsi</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="bg-green-100/70 text-green-800 text-[9px] font-bold px-2 py-0.5 rounded-md"><i class="ph ph-cow"></i> SAPI: ${terdistribusiSapi}</span>
+                                    <span class="bg-green-100/70 text-green-800 text-[9px] font-bold px-2 py-0.5 rounded-md z-9999"><i class="ph ph-cow"></i> SAPI: ${terdistribusiSapi}</span>
                                     <span class="bg-orange-100/70 text-orange-800 text-[9px] font-bold px-2 py-0.5 rounded-md"><i class="ph ph-paw-print"></i> KAMBING: ${terdistribusiKambing}</span>
                                 </div>
                             </div>
@@ -100,12 +100,17 @@ async function buildDistribusiView() {
                     <div class="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full pointer-events-none"></div>
                 </div>
             </div>
+        <div class="p-4 space-y-6 pb-24 view-enter">
+            <!-- Header -->
 
             <!-- Filter Tabs -->
             <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
                 <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
                 <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
                 <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
+           </div>
+        </div>
+
     `;
 
 
