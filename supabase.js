@@ -26,9 +26,9 @@ const mockData = {
         { id: '3', nama: 'Rizky Pratama', wilayah: 'RT 1 RW 7', alamat: '', no_telp: '085612345678', kelompok: 'Kambing', status_lunas: true, created_at: new Date().toISOString() }
     ],
     penerima: [
-        { id: '1', nama: 'Bapak Slamet', wilayah: 'RT 1 RW 6', alamat: 'Jl. Melati No. 12', jumlah: 1, no_telp: '', muslim: true, created_at: new Date().toISOString() },
-        { id: '2', nama: 'Ibu Wahyuni', wilayah: 'RT 1 RW 6', alamat: 'Jl. Mawar No. 45', jumlah: 1, no_telp: '', muslim: true, created_at: new Date().toISOString() },
-        { id: '3', nama: 'Pak RT Mulyono', wilayah: 'RT 2 RW 6', alamat: 'Kompleks Asri B-10', jumlah: 1, no_telp: '', muslim: true, created_at: new Date().toISOString() }
+        { id: '1', nama: 'Bapak Slamet', wilayah: 'RT 1 RW 6', alamat: 'Jl. Melati No. 12', jumlah: 1, jumlah_kg: 0, no_telp: '', muslim: true, created_at: new Date().toISOString() },
+        { id: '2', nama: 'Ibu Wahyuni', wilayah: 'RT 1 RW 6', alamat: 'Jl. Mawar No. 45', jumlah: 1, jumlah_kg: 0, no_telp: '', muslim: true, created_at: new Date().toISOString() },
+        { id: '3', nama: 'Pak RT Mulyono', wilayah: 'RT 2 RW 6', alamat: 'Kompleks Asri B-10', jumlah: 1, jumlah_kg: 0, no_telp: '', muslim: true, created_at: new Date().toISOString() }
     ],
     panitia: [
         { id: '1', nama: 'Ahmad Yani', wilayah: 'RT 1 RW 6', tugas: ['Penyembelihan', 'Pengulitan'], is_koordinator: true, hadir: true, created_at: new Date().toISOString() },
@@ -40,8 +40,8 @@ const mockData = {
         { id: '2', nama_transaksi: 'Beli Tali & Plastik', tanggal: '2024-06-02', jenis: 'pengeluaran', nominal: 150000, created_at: new Date().toISOString() }
     ],
     distribusi: [
-        { id: '1', kelompok: 'Pengqurban', id_penerima: '2', wilayah: null, nama_petugas: 'Ahmad', porsi_sapi: 2, porsi_kambing: 0, porsi_khusus: '', request: 'Daging 4 kg + 3 bungkus (sapi/kambing)', created_at: new Date().toISOString() },
-        { id: '2', kelompok: 'Penerima', id_penerima: null, wilayah: 'RT 2 RW 7', nama_petugas: 'Budi', porsi_sapi: 45, porsi_kambing: 0, porsi_khusus: '', request: '45 Porsi', created_at: new Date().toISOString() }
+        { id: '1', kelompok: 'Pengqurban', id_penerima: '2', wilayah: null, nama_petugas: 'Ahmad', porsi_kg: 4, porsi_sapi: 2, porsi_kambing: 0, porsi_khusus: '', request: 'Daging 4 kg + 3 bungkus (sapi/kambing)', created_at: new Date().toISOString() },
+        { id: '2', kelompok: 'Penerima', id_penerima: null, wilayah: 'RT 2 RW 7', nama_petugas: 'Budi', porsi_kg: 0, porsi_sapi: 45, porsi_kambing: 0, porsi_khusus: '', request: '45 Porsi', created_at: new Date().toISOString() }
     ]
 };
 

@@ -95,7 +95,7 @@ async function buildPenerimaView() {
 }
 
 const showFormPenerima = async (id = null) => {
-    let item = { nama: '', wilayah: window.penerimaFilter || WILAYAH_OPTIONS[0], alamat: '', jumlah: 1, no_telp: '', muslim: true };
+    let item = { nama: '', wilayah: window.penerimaFilter || WILAYAH_OPTIONS[0], alamat: '', jumlah: 1, jumlah_kg: 0, no_telp: '', muslim: true };
     if (id) {
         const { data } = await window.api.penerima.select();
         item = data.find(i => i.id === id);
@@ -126,8 +126,16 @@ const showFormPenerima = async (id = null) => {
                             <textarea id="fp-alamat" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none" placeholder="Detail alamat...">${item.alamat || ''}</textarea>
                         </div>
                         <div id="fp-jumlah-container" class="${item.wilayah === 'Lainnya' ? '' : 'hidden'}">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Jumlah Porsi</label>
-                            <input type="number" id="fp-jumlah" min="1" value="${item.jumlah}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Jumlah Porsi</label>
+                                    <input type="number" id="fp-jumlah" min="1" value="${item.jumlah}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Jumlah KG (Opsional)</label>
+                                    <input type="number" id="fp-jumlah-kg" min="0" value="${item.jumlah_kg || 0}" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 focus:border-qurban-500 outline-none">
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">No. Telp (Opsional)</label>
@@ -155,6 +163,7 @@ const showFormPenerima = async (id = null) => {
     const wilSelect = document.getElementById('fp-wilayah');
     const jumContainer = document.getElementById('fp-jumlah-container');
     const jumInput = document.getElementById('fp-jumlah');
+    const jumKgInput = document.getElementById('fp-jumlah-kg');
 
     wilSelect.addEventListener('change', (e) => {
         if (e.target.value === 'Lainnya') {
@@ -162,6 +171,7 @@ const showFormPenerima = async (id = null) => {
         } else {
             jumContainer.classList.add('hidden');
             jumInput.value = 1;
+            if(jumKgInput) jumKgInput.value = 0;
         }
     });
 
@@ -172,6 +182,7 @@ const showFormPenerima = async (id = null) => {
             wilayah: document.getElementById('fp-wilayah').value,
             alamat: document.getElementById('fp-alamat').value,
             jumlah: parseInt(document.getElementById('fp-jumlah').value) || 1,
+            jumlah_kg: parseInt(document.getElementById('fp-jumlah-kg')?.value) || 0,
             no_telp: document.getElementById('fp-notelp').value,
             muslim: document.getElementById('fp-muslim').checked
         };

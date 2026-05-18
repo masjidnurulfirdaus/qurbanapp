@@ -16,21 +16,98 @@ async function buildDistribusiView() {
     const penerimas = penerimaRes.data || [];
     const distribusi = distribusiRes.data || [];
 
+    // Calculation
+    const pengqurbanSapi = qurbans.filter(q => q.kelompok.startsWith('Sapi'));
+    const pengqurbanSapiCount = pengqurbanSapi.length;
+    
+    // Kebutuhan Porsi KG
+    let kebutuhanPorsiKg = pengqurbanSapiCount * 4;
+    kebutuhanPorsiKg += penerimas.reduce((acc, p) => acc + (p.jumlah_kg || 0), 0);
+
+    // Kebutuhan Porsi Bungkus
+    let kebutuhanPorsiBungkus = penerimas.reduce((acc, p) => {
+        if (!p.jumlah_kg || p.jumlah_kg === 0) {
+            return acc + (p.jumlah || 0);
+        }
+        return acc;
+    }, 0);
+    kebutuhanPorsiBungkus += panitias.length;
+    kebutuhanPorsiBungkus += pengqurbanSapiCount * 3;
+
+    // Terdistribusi
+    const terdistribusiKg = distribusi.reduce((acc, d) => acc + (parseInt(d.porsi_kg) || 0), 0);
+    const terdistribusiSapi = distribusi.reduce((acc, d) => acc + (parseInt(d.porsi_sapi) || 0), 0);
+    const terdistribusiKambing = distribusi.reduce((acc, d) => acc + (parseInt(d.porsi_kambing) || 0), 0);
+    const terdistribusiBungkus = terdistribusiSapi + terdistribusiKambing;
+
     let html = `
-        <div class="p-4 space-y-6 pb-24 view-enter">
-            <!-- Header -->
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">Distribusi Daging</h2>
-                <p class="text-sm text-slate-500 mb-4">Kelola penyaluran daging qurban</p>
-                
-                <!-- Filter Tabs -->
-                <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-                    <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
-                    <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
-                    <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
+        <div class="p-4 space-y-4 pb-24 view-enter">
+            <!-- Widgets -->
+            <div class="grid grid-cols-1 gap-4 mb-2">
+                <!-- Kebutuhan Widget -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="ph ph-chart-bar text-green-700 text-lg"></i>
+                        <h3 class="font-bold text-slate-800 text-xs tracking-wider">KEBUTUHAN</h3>
+                    </div>
+                    <div class="flex justify-between items-end pr-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-1">PORSI KG</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-black text-green-800">${kebutuhanPorsiKg}</span>
+                                <span class="text-sm font-bold text-green-800">kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-1">PORSI BUNGKUS</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-black text-green-800">${kebutuhanPorsiBungkus}</span>
+                                <span class="text-sm font-bold text-green-800">bungkus</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full pointer-events-none"></div>
+                </div>
+
+                <!-- Terdistribusi Widget -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="ph ph-check-circle text-amber-700 text-lg"></i>
+                        <h3 class="font-bold text-slate-800 text-xs tracking-wider">TERDISTRIBUSI</h3>
+                    </div>
+                    <div class="flex justify-between items-center pr-2">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-1">PORSI KG</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-black text-amber-900">${terdistribusiKg}</span>
+                                <span class="text-sm font-bold text-amber-900">kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-1">TOTAL PORSI</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-4xl font-black text-amber-900">${terdistribusiBungkus}</span>
+                                    <span class="text-[10px] font-bold text-amber-900 mb-1.5">porsi</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="bg-green-100/70 text-green-800 text-[9px] font-bold px-2 py-0.5 rounded-md"><i class="ph ph-cow"></i> SAPI: ${terdistribusiSapi}</span>
+                                    <span class="bg-orange-100/70 text-orange-800 text-[9px] font-bold px-2 py-0.5 rounded-md"><i class="ph ph-paw-print"></i> KAMBING: ${terdistribusiKambing}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full pointer-events-none"></div>
                 </div>
             </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+                <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
+                <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
+                <button class="btn-filter-distribusi px-5 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
     `;
+
 
     // -----------------------------------------
     // 1. PENGQURBAN
@@ -229,6 +306,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
         id_penerima: defaultId || existingData?.id_penerima || '',
         wilayah: defaultWilayah || existingData?.wilayah || '',
         nama_petugas: existingData?.nama_petugas || '',
+        porsi_kg: existingData?.porsi_kg || 0,
         porsi_sapi: existingData?.porsi_sapi || 0,
         porsi_kambing: existingData?.porsi_kambing || 0,
         porsi_khusus: existingData?.porsi_khusus || '',
@@ -284,6 +362,14 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
                             <div class="relative">
                                 <input type="text" id="fd-petugas" value="${item.nama_petugas}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 outline-none pl-10" placeholder="Ketik nama petugas...">
                                 <i class="ph ph-identification-card absolute left-3.5 top-3 text-slate-400 text-lg"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Porsi Daging (KG)</label>
+                            <div class="relative">
+                                <input type="number" id="fd-porsi-kg" value="${item.porsi_kg}" min="0" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-qurban-500 outline-none pl-10" placeholder="0">
+                                <i class="ph ph-scales absolute left-3.5 top-3 text-slate-400 text-lg"></i>
                             </div>
                         </div>
 
@@ -400,6 +486,31 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
         infoContainer.classList.add('hidden');
         infoContainer.dataset.requestValue = '';
 
+        const porsiKgInput = document.getElementById('fd-porsi-kg');
+        if (!isEdit && porsiKgInput) {
+            porsiKgInput.value = 0;
+            if (kel === 'Pengqurban') {
+                const targetId = document.getElementById('fd-target-id')?.value;
+                if (targetId) {
+                    const q = qurbans.find(x => x.id === targetId);
+                    if (q && q.kelompok && q.kelompok.startsWith('Sapi')) {
+                        porsiKgInput.value = 4;
+                    }
+                }
+            } else if (kel === 'Penerima') {
+                const wil = document.getElementById('fd-target-wilayah')?.value;
+                if (wil === 'Lainnya') {
+                    const tid = document.getElementById('fd-target-id')?.value;
+                    if (tid) {
+                        const p = penerimas.find(x => x.id === tid);
+                        if (p && p.jumlah_kg > 0) {
+                            porsiKgInput.value = p.jumlah_kg;
+                        }
+                    }
+                }
+            }
+        }
+
         if (isEdit && item.request) {
             if (kel === 'Pengqurban') {
                 infoTitle.textContent = "Data Pengqurban";
@@ -500,6 +611,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
             id_penerima: finalIdPenerima,
             wilayah: finalWilayah,
             nama_petugas: document.getElementById('fd-petugas').value,
+            porsi_kg: parseInt(document.getElementById('fd-porsi-kg').value) || 0,
             porsi_sapi: parseInt(document.getElementById('fd-sapi').value) || 0,
             porsi_kambing: parseInt(document.getElementById('fd-kambing').value) || 0,
             porsi_khusus: document.getElementById('fd-khusus').value,
