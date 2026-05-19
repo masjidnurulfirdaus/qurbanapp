@@ -34,6 +34,87 @@ async function buildDistribusiView() {
     kebutuhanPorsiBungkus += panitias.length;
     kebutuhanPorsiBungkus += pengqurbanSapiCount * 3;
 
+    // Breakdown Modal Content Generation
+    let porsiKgHtml = `
+        <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+            <span class="text-sm font-medium text-slate-700">Pengqurban</span>
+            <span class="text-sm font-bold text-slate-800">${pengqurbanSapiCount} &times; 4 = ${pengqurbanSapiCount * 4}</span>
+        </div>
+    `;
+    penerimas.filter(p => p.jumlah_kg > 0).forEach(p => {
+        porsiKgHtml += `
+        <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+            <span class="text-sm font-medium text-slate-700">${p.nama}</span>
+            <span class="text-sm font-bold text-slate-800">${p.jumlah_kg}</span>
+        </div>
+        `;
+    });
+
+    let porsiBungkusHtml = `
+        <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+            <span class="text-sm font-medium text-slate-700">Pengqurban</span>
+            <span class="text-sm font-bold text-slate-800">${pengqurbanSapiCount} &times; 3 = ${pengqurbanSapiCount * 3}</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+            <span class="text-sm font-medium text-slate-700">Panitia</span>
+            <span class="text-sm font-bold text-slate-800">${panitias.length}</span>
+        </div>
+    `;
+    
+    const wilayahBungkus = {};
+    penerimas.forEach(p => {
+        if (!p.jumlah_kg || p.jumlah_kg === 0) {
+            if (p.wilayah !== 'Lainnya') {
+                if (!wilayahBungkus[p.wilayah]) wilayahBungkus[p.wilayah] = 0;
+                wilayahBungkus[p.wilayah] += (p.jumlah || 0);
+            } else {
+                porsiBungkusHtml += `
+                <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+                    <span class="text-sm font-medium text-slate-700">${p.nama}</span>
+                    <span class="text-sm font-bold text-slate-800">${p.jumlah || 0}</span>
+                </div>
+                `;
+            }
+        }
+    });
+
+    for (const [wil, count] of Object.entries(wilayahBungkus)) {
+        porsiBungkusHtml += `
+        <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+            <span class="text-sm font-medium text-slate-700">${wil}</span>
+            <span class="text-sm font-bold text-slate-800">${count}</span>
+        </div>
+        `;
+    }
+
+    window._kebutuhanModalHtml = `
+        <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 modal-enter">
+            <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+                <div class="p-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+                    <h2 class="text-lg font-bold text-qurban-800 flex items-center gap-2">
+                        <i class="ph ph-chart-bar"></i> Detail Kebutuhan
+                    </h2>
+                    <button class="modal-close-btn p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors"><i class="ph ph-x text-lg"></i></button>
+                </div>
+                
+                <div class="p-5 overflow-y-auto space-y-6">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Porsi KG</h3>
+                        <div class="bg-slate-50 rounded-xl px-4 py-2 border border-slate-100">
+                            ${porsiKgHtml}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Porsi Bungkus</h3>
+                        <div class="bg-slate-50 rounded-xl px-4 py-2 border border-slate-100">
+                            ${porsiBungkusHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
     // Terdistribusi
     const terdistribusiKg = distribusi.reduce((acc, d) => acc + (parseInt(d.porsi_kg) || 0), 0);
     const terdistribusiSapi = distribusi.reduce((acc, d) => acc + (parseInt(d.porsi_sapi) || 0), 0);
@@ -46,9 +127,14 @@ async function buildDistribusiView() {
             <div class="grid grid-cols-1 gap-4 mb-2">
                 <!-- Kebutuhan Widget -->
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 relative overflow-hidden">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i class="ph ph-chart-bar text-green-700 text-lg"></i>
-                        <h3 class="font-bold text-slate-800 text-xs tracking-wider">KEBUTUHAN</h3>
+                    <div class="flex items-center justify-between mb-3 z-10 relative">
+                        <div class="flex items-center gap-2">
+                            <i class="ph ph-chart-bar text-green-700 text-lg"></i>
+                            <h3 class="font-bold text-slate-800 text-xs tracking-wider">KEBUTUHAN</h3>
+                        </div>
+                        <button class="btn-lihat-kebutuhan text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-lg font-bold transition-colors flex items-center gap-1 shadow-sm border border-slate-200">
+                            <i class="ph ph-eye"></i> Lihat
+                        </button>
                     </div>
                     <div class="flex justify-between items-end pr-4">
                         <div>
@@ -657,6 +743,15 @@ function attachDistribusiListeners() {
     // Filter Logic
     const filterBtns = document.querySelectorAll('.btn-filter-distribusi');
     const sections = document.querySelectorAll('.distribusi-section');
+
+    const btnLihatKebutuhan = document.querySelector('.btn-lihat-kebutuhan');
+    if (btnLihatKebutuhan) {
+        btnLihatKebutuhan.addEventListener('click', () => {
+            if (window._kebutuhanModalHtml) {
+                showModal(window._kebutuhanModalHtml);
+            }
+        });
+    }
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
