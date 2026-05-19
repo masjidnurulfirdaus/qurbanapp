@@ -286,7 +286,7 @@ async function buildDistribusiView() {
             <!-- Header -->
 
             <!-- Filter Tabs -->
-            <div class="flex gap-1 overflow-x-auto pb-2 hide-scrollbar">
+            <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
                 <button class="btn-filter-distribusi px-2 py-2.5 rounded-full text-sm font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
                 <button class="btn-filter-distribusi px-2 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
                 <button class="btn-filter-distribusi px-2 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
