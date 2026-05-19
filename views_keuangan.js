@@ -44,8 +44,13 @@ async function buildKeuanganView() {
                 <div class="absolute -right-10 -bottom-10 opacity-10">
                     <i class="ph ph-wallet text-[150px]"></i>
                 </div>
-                
-                <h2 class="text-sm font-medium text-qurban-200 mb-1">SISA SALDO</h2>
+                <div class="flex flex-row justify-between">
+                    <h2 class="text-sm font-medium text-qurban-200 mb-1">SISA SALDO</h2>
+                    ${currentUser ? `<button id="btn-download-keuangan" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
+                        <i class="ph ph-download-simple text-lg"></i>
+                        <span>Excel</span>
+                    </button>` : ''}
+                </div>
                 <h3 class="text-4xl font-bold mb-6">${formatRupiah(saldo)}</h3>
                 
                 <div class="flex gap-4">
@@ -71,9 +76,6 @@ async function buildKeuanganView() {
                 <h3 class="text-xl font-bold text-slate-800">Riwayat Transaksi</h3>
                 ${currentUser ? `
                     <div class="flex gap-2">
-                        <button id="btn-download-keuangan" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5">
-                            <i class="ph ph-download-simple"></i> Excel
-                        </button>
                         <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5 btn-add-transaksi">
                             <i class="ph ph-plus"></i> Transaksi
                         </button>
@@ -234,9 +236,9 @@ function attachKeuanganListeners() {
                         }
                     });
                 }
-                
+
                 // Sort by date ascending for the report
-                allTransactions.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal)); 
+                allTransactions.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
                 if (allTransactions.length === 0) return showToast('Data kosong', 'error');
 
@@ -251,7 +253,7 @@ function attachKeuanganListeners() {
                 const ws = XLSX.utils.json_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Keuangan");
-                
+
                 XLSX.writeFile(wb, "Laporan_Keuangan.xlsx");
                 showToast('Laporan keuangan berhasil diunduh!');
             } catch (err) {

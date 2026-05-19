@@ -83,7 +83,7 @@ async function buildDistribusiView() {
                             </div>
                         </div>
                         <div>
-                            <p class="text-[10px] font-bold text-slate-500 mb-1">TOTAL PORSI</p>
+                            <p class="text-[10px] font-bold text-slate-500 mb-1">TOTAL PORSI BUNGKUS</p>
                             <div class="flex items-center gap-2">
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-4xl font-black text-amber-900">${terdistribusiBungkus}</span>
