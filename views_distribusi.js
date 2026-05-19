@@ -66,7 +66,6 @@ async function buildDistribusiView() {
                             </div>
                         </div>
                     </div>
-                    <div class="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full pointer-events-none"></div>
                 </div>
 
                 <!-- Terdistribusi Widget -->
@@ -97,10 +96,9 @@ async function buildDistribusiView() {
                             </div>
                         </div>
                     </div>
-                    <div class="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full pointer-events-none"></div>
                 </div>
             </div>
-        <div class="p-4 space-y-6 pb-24 view-enter">
+        <div class="p-4 space-y-6 view-enter">
             <!-- Header -->
 
             <!-- Filter Tabs -->

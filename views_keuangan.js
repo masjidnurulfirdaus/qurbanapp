@@ -70,9 +70,14 @@ async function buildKeuanganView() {
             <div class="flex justify-between items-end mt-8 mb-2">
                 <h3 class="text-xl font-bold text-slate-800">Riwayat Transaksi</h3>
                 ${currentUser ? `
-                    <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5 btn-add-transaksi">
-                        <i class="ph ph-plus"></i> Transaksi
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="btn-download-keuangan" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5">
+                            <i class="ph ph-download-simple"></i> Excel
+                        </button>
+                        <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5 btn-add-transaksi">
+                            <i class="ph ph-plus"></i> Transaksi
+                        </button>
+                    </div>
                 ` : ''}
             </div>
 
@@ -204,6 +209,57 @@ const showFormTransaksi = async (id = null) => {
 };
 
 function attachKeuanganListeners() {
+    const btnDownload = document.getElementById('btn-download-keuangan');
+    if (btnDownload) {
+        btnDownload.addEventListener('click', async () => {
+            try {
+                const [{ data: transaksis }, { data: pengqurbans }] = await Promise.all([
+                    window.api.transaksi.select(),
+                    window.api.pengqurban.select()
+                ]);
+
+                const allTransactions = [...(transaksis || [])];
+
+                if (pengqurbans) {
+                    pengqurbans.forEach(p => {
+                        if (p.setoran && p.setoran > 0) {
+                            allTransactions.push({
+                                id: p.id,
+                                nama_transaksi: p.kelompok === 'Kambing' ? `Upah Jagal Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
+                                tanggal: p.created_at || new Date().toISOString(),
+                                jenis: 'pendapatan',
+                                nominal: p.setoran,
+                                is_pengqurban: true
+                            });
+                        }
+                    });
+                }
+                
+                // Sort by date ascending for the report
+                allTransactions.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal)); 
+
+                if (allTransactions.length === 0) return showToast('Data kosong', 'error');
+
+                const exportData = allTransactions.map(t => ({
+                    Tanggal: new Date(t.tanggal).toLocaleDateString('id-ID'),
+                    Keterangan: t.nama_transaksi,
+                    Jenis: t.jenis === 'pendapatan' ? 'Pemasukan' : 'Pengeluaran',
+                    Pemasukan: t.jenis === 'pendapatan' ? t.nominal : 0,
+                    Pengeluaran: t.jenis === 'pengeluaran' ? t.nominal : 0
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Keuangan");
+                
+                XLSX.writeFile(wb, "Laporan_Keuangan.xlsx");
+                showToast('Laporan keuangan berhasil diunduh!');
+            } catch (err) {
+                showToast('Gagal mengunduh laporan: ' + err.message, 'error');
+            }
+        });
+    }
+
     document.querySelectorAll('.btn-add-transaksi').forEach(btn => {
         btn.addEventListener('click', () => showFormTransaksi());
     });
