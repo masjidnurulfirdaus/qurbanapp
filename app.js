@@ -219,7 +219,7 @@ navItems.forEach(btn => {
     });
 });
 
-const renderView = async (view) => {
+const renderView = async (view, param = null) => {
     currentView = view;
     appContent.classList.add('opacity-0'); // fade out
 
@@ -236,9 +236,11 @@ const renderView = async (view) => {
                 case 'absensi': html = await buildAbsensiView(); break;
                 case 'keuangan': html = await buildKeuanganView(); break;
                 case 'distribusi': html = await buildDistribusiView(); break;
+                case 'dokumentasi': html = await buildDokumentasiView(); break;
+                case 'dokumentasi_detail': html = await buildDokumentasiDetailView(param); break;
             }
             appContent.innerHTML = html;
-            attachViewListeners(view);
+            attachViewListeners(view, param);
         } catch (err) {
             appContent.innerHTML = `<div class="p-6 text-center text-red-500">Gagal memuat data: ${err.message}</div>`;
         }
@@ -298,6 +300,20 @@ async function buildPengqurbanView() {
                         <div class="text-xs text-qurban-200">Pengqurban</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Dokumentasi Banner -->
+            <div class="bg-qurban-50 border border-qurban-100 rounded-2xl p-4 flex justify-between items-center cursor-pointer hover:bg-qurban-100 transition-colors" id="btn-lihat-dokumentasi">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-qurban-500 text-white flex items-center justify-center">
+                        <i class="ph ph-images text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-qurban-900">Dokumentasi Kurban</h4>
+                        <p class="text-xs text-qurban-700">Lihat foto & video pelaksanaan</p>
+                    </div>
+                </div>
+                <i class="ph ph-caret-right text-qurban-600 font-bold"></i>
             </div>
     `;
 
@@ -580,8 +596,16 @@ const showFormPengqurban = async (id = null, defaultKelompok = null) => {
 // ===================================================================
 // ATTACH LISTENERS FOR VIEWS
 // ===================================================================
-function attachViewListeners(view) {
+function attachViewListeners(view, param = null) {
     if (view === 'pengqurban') {
+        const btnDokumentasi = document.getElementById('btn-lihat-dokumentasi');
+        if (btnDokumentasi) {
+            btnDokumentasi.addEventListener('click', () => {
+                navItems.forEach(b => b.classList.remove('active', 'text-qurban-700'));
+                renderView('dokumentasi');
+            });
+        }
+        
         const btnDownload = document.getElementById('btn-download-pengqurban');
         if (btnDownload) {
             btnDownload.addEventListener('click', async () => {
@@ -639,6 +663,10 @@ function attachViewListeners(view) {
         attachKeuanganListeners();
     } else if (view === 'distribusi' && typeof attachDistribusiListeners === 'function') {
         attachDistribusiListeners();
+    } else if (view === 'dokumentasi' && typeof attachDokumentasiListeners === 'function') {
+        attachDokumentasiListeners();
+    } else if (view === 'dokumentasi_detail' && typeof attachDokumentasiDetailListeners === 'function') {
+        attachDokumentasiDetailListeners(param);
     }
 }
 

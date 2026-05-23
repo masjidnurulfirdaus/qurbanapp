@@ -42,7 +42,8 @@ const mockData = {
     distribusi: [
         { id: '1', kelompok: 'Pengqurban', id_penerima: '2', wilayah: null, nama_petugas: 'Ahmad', porsi_kg: 4, porsi_sapi: 2, porsi_kambing: 0, porsi_khusus: '', request: 'Daging 4 kg + 3 bungkus (sapi/kambing)', created_at: new Date().toISOString() },
         { id: '2', kelompok: 'Penerima', id_penerima: null, wilayah: 'RT 2 RW 7', nama_petugas: 'Budi', porsi_kg: 0, porsi_sapi: 45, porsi_kambing: 0, porsi_khusus: '', request: '45 Porsi', created_at: new Date().toISOString() }
-    ]
+    ],
+    dokumentasi: []
 };
 
 // Simple ID generator
@@ -165,6 +166,26 @@ const db = {
         delete: async (id) => {
             if (supabaseClient) return await supabaseClient.from('distribusi').delete().eq('id', id);
             mockData.distribusi = mockData.distribusi.filter(item => item.id !== id);
+            return { error: null };
+        }
+    },
+    dokumentasi: {
+        select: async () => supabaseClient ? await supabaseClient.from('dokumentasi').select('*').order('created_at', { ascending: false }) : { data: [...mockData.dokumentasi], error: null },
+        insert: async (data) => {
+            if (supabaseClient) return await supabaseClient.from('dokumentasi').insert([data]).select();
+            const newItem = { id: generateId(), created_at: new Date().toISOString(), ...data };
+            mockData.dokumentasi.unshift(newItem);
+            return { data: [newItem], error: null };
+        },
+        update: async (id, data) => {
+            if (supabaseClient) return await supabaseClient.from('dokumentasi').update(data).eq('id', id).select();
+            const idx = mockData.dokumentasi.findIndex(item => item.id === id);
+            if (idx > -1) mockData.dokumentasi[idx] = { ...mockData.dokumentasi[idx], ...data };
+            return { data: [mockData.dokumentasi[idx]], error: null };
+        },
+        delete: async (id) => {
+            if (supabaseClient) return await supabaseClient.from('dokumentasi').delete().eq('id', id);
+            mockData.dokumentasi = mockData.dokumentasi.filter(item => item.id !== id);
             return { error: null };
         }
     }
