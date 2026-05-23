@@ -236,7 +236,7 @@ function attachDokumentasiDetailListeners(kelompok) {
                     const dbPayload = {
                         kelompok: kelompok,
                         file_id: result.id || result.fileId || `simulated_${Date.now()}`,
-                        file_url: result.url || result.fileUrl,
+                        file_url: result.viewableUrl,
                         file_name: file.name,
                         file_type: file.type
                     };
