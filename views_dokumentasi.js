@@ -1,5 +1,5 @@
 // URL Endpoint AppScript untuk upload/delete file
-const APPSCRIPT_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbyPOoluYXKplC_tKYF70sdeNnbB8NlzcTEwD6C96UUJN0Gx82AU0uJkWY1UdjIf5EnY8Q/exec";
+const APPSCRIPT_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbxTG2ciLDrEVLrfXDqHn-5wCPOw08SiJZ1WshjpcVJkcmKrzF0gRKosMeI8PKEA4kEfQw/exec";
 
 // Utility untuk konversi file ke Base64
 const fileToBase64 = (file) => {
