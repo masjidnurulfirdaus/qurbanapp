@@ -146,10 +146,7 @@ async function buildDokumentasiDetailView(kelompok) {
             html += `
                 <div class="relative group rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100 aspect-square">
                     ${isVideo ? `
-                        <video src="${doc.file_url}" class="w-full h-full object-cover" controls preload="metadata"></video>
-                        <div class="absolute top-2 right-2 bg-black/50 text-white p-1.5 rounded-full backdrop-blur-sm pointer-events-none">
-                            <i class="ph ph-video-camera text-sm"></i>
-                        </div>
+                        <iframe src="https://drive.google.com/file/d/${doc.file_id}/preview" width="640" height="360" allow="autoplay" allowfullscreen></iframe>
                     ` : `
                         <img src="${doc.file_url}" alt="${doc.file_name}" class="w-full h-full object-cover cursor-pointer img-preview" data-src="${doc.file_url}">
                     `}
