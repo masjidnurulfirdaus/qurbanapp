@@ -59,11 +59,6 @@ async function buildDokumentasiView() {
                     <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 text-sm font-semibold py-2 px-4 rounded-xl transition-colors btn-lihat-dok whitespace-nowrap" data-kel="${group}">
                         Lihat
                     </button>
-                    ${canEditDokumentasi() ? `
-                        <button class="bg-qurban-700 text-white hover:bg-qurban-800 text-sm font-semibold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 btn-tambah-dok whitespace-nowrap" data-kel="${group}">
-                            <i class="ph ph-plus"></i> <span class="hidden sm:inline">Tambah</span>
-                        </button>
-                    ` : ''}
                 </div>
             </div>
         `;
