@@ -371,12 +371,17 @@ async function buildDistribusiView() {
                                 <i class="ph ph-identification-badge text-xl"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-slate-800 text-sm">${m.nama}</h5>
+                                <h5 class="font-bold text-slate-800 text-sm">${p.nama}</h5>
+                                <p class="text-[10px] text-slate-500">${p.wilayah}</p>
                             </div>
-                        </div>
-                        ${currentUser ? `
+                            ${canEditDistribusi() ? `
+                            <div class="flex gap-1 ml-2">
+                                <button class="p-1.5 text-slate-400 hover:text-red-500 btn-delete-dist" data-id="${p.id}"><i class="ph ph-trash"></i></button>
+                            </div>
+                        ` : ''}</div>
+                        ${canEditDistribusi() ? `
                             <button class="btn-distribusi flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSelesai ? 'text-green-700 hover:bg-green-50' : 'bg-qurban-700 text-white hover:bg-qurban-800'}" 
-                                    data-id="${m.id}" data-kelompok="Panitia">
+                                    data-id="${p.id}" data-kelompok="Panitia">
                                 ${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}
                             </button>`
                         : ``}
@@ -417,7 +422,7 @@ async function buildDistribusiView() {
                             <p class="text-[10px] text-slate-500">${totalPorsi} Porsi</p>
                         </div>
                     </div>
-                    ${currentUser ? `
+                    ${canEditDistribusi() ? `
                         <button class="btn-distribusi flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSelesai ? 'text-green-700 hover:bg-green-50' : 'bg-qurban-700 text-white hover:bg-qurban-800'}" 
                                 data-wilayah="${wil}" data-kelompok="Penerima">
                             ${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}
@@ -446,7 +451,7 @@ async function buildDistribusiView() {
                             <p class="text-[10px] text-slate-500">${m.jumlah || 1} Porsi (Lainnya)</p>
                         </div>
                     </div>
-                    ${currentUser ? `
+                    ${canEditDistribusi() ? `
                         <button class="btn-distribusi flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSelesai ? 'text-green-700 hover:bg-green-50' : 'bg-qurban-700 text-white hover:bg-qurban-800'}" 
                                 data-id="${m.id}" data-kelompok="Penerima">
                             ${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}

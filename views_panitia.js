@@ -35,15 +35,19 @@ async function buildPanitiaView() {
                             <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${relawanCount} Relawan</span>
                         </div>
                     </div>
-                    ${currentUser ? `
+                    ${canEditAll() ? `
                         <div class="flex flex-col gap-2 z-10 items-end">
-                            <button class="w-12 h-12 bg-white text-qurban-700 rounded-xl shadow-md flex items-center justify-center text-xl hover:bg-qurban-50 transition-colors btn-add-panitia">
-                                <i class="ph ph-plus font-bold"></i>
+                            ${canEditAll() ? `
+                            <button class="fixed bottom-24 right-6 bg-qurban-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-qurban-800 hover:-translate-y-1 transition-all" id="btn-add-panitia">
+                                <i class="ph ph-plus"></i>
                             </button>
+                            ` : ''}
+                            ${canEditAll() ? `
                             <button id="btn-download-panitia" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
                                 <i class="ph ph-download-simple text-lg"></i>
                                 <span>Excel</span>
                             </button>
+                            ` : ''}
                         </div>
                     ` : ''}
                 </div>
@@ -164,7 +168,7 @@ function renderPanitiaCard(m) {
                     </div>
                 </div>
             </div>
-            ${currentUser ? `
+            ${canEditAll() ? `
                 <div class="flex gap-1 flex-col md:flex-row">
                     <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-panitia" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
                     <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-panitia" data-id="${m.id}"><i class="ph ph-trash"></i></button>

@@ -21,7 +21,7 @@ async function buildPenerimaView() {
                 </div>
                 <div class="flex flex-row justify-between">
                     <h2 class="text-sm font-medium text-qurban-100 mb-1">TOTAL PENERIMA</h2>
-                    ${currentUser ? `<button id="btn-download-penerima" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
+                    ${canEditAll() ? `<button id="btn-download-penerima" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
                         <i class="ph ph-download-simple text-lg"></i>
                         <span>Excel</span>
                     </button>` : ''}
@@ -48,7 +48,7 @@ async function buildPenerimaView() {
             <!-- List -->
             <div class="flex justify-between items-end mt-4">
                 <h3 class="text-xl font-bold text-qurban-800">Daftar Penerima</h3>
-                ${currentUser ? `
+                ${canEditAll() ? `
                     <button class="bg-qurban-700 hover:bg-qurban-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2 btn-add-penerima">
                         <i class="ph ph-user-plus"></i> Tambah
                     </button>
@@ -80,7 +80,7 @@ async function buildPenerimaView() {
                                 <p class="text-xs text-slate-500 mt-0.5"><i class="ph ph-map-pin text-slate-400"></i> ${p.alamat || p.wilayah}</p>
                             </div>
                         </div>
-                        ${currentUser ? `
+                        ${canEditAll() ? `
                             <div class="flex gap-1 flex-col sm:flex-row">
                                 <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-blue-50 hover:text-blue-500 btn-edit-penerima" data-id="${p.id}"><i class="ph ph-pencil-simple"></i></button>
                                 <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 btn-delete-penerima" data-id="${p.id}"><i class="ph ph-trash"></i></button>

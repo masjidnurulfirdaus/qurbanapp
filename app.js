@@ -51,6 +51,10 @@ const dynamicModalContainer = document.getElementById('dynamic-modal-container')
 const toastContainer = document.getElementById('toast-container');
 
 // Utils
+const canEditAll = () => currentUser && (!currentUser.role || currentUser.role === 'admin');
+const canEditDokumentasi = () => currentUser && (canEditAll() || currentUser.role === 'dokumentasi');
+const canEditDistribusi = () => currentUser && (canEditAll() || currentUser.role === 'distribusi');
+
 const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 };
@@ -277,7 +281,7 @@ async function buildPengqurbanView() {
                         <h2 class="text-sm font-medium text-qurban-100 mb-1">DASHBOARD OVERVIEW</h2>
                         <h3 class="text-2xl font-bold mb-4">Progress Qurban</h3>
                     </div>
-                    ${currentUser ? `
+                    ${canEditAll() ? `
                     <button id="btn-download-pengqurban" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
                         <i class="ph ph-download-simple text-lg"></i>
                         <span>Excel</span>
@@ -336,7 +340,7 @@ async function buildPengqurbanView() {
                             </span>
                         </div>
                     </div>
-                    ${currentUser && !isFull ? `
+                    ${canEditAll() && !isFull ? `
                         <button class="text-qurban-600 hover:bg-qurban-50 p-2 rounded-lg transition-colors flex items-center gap-1 text-sm font-medium btn-add-qurban" data-kel="${group}">
                             <i class="ph ph-user-plus text-lg"></i> Tambah
                         </button>
@@ -363,7 +367,7 @@ async function buildPengqurbanView() {
                                     <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah === 'Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
                                 </div>
                             </div>
-                            ${currentUser ? `
+                            ${canEditAll() ? `
                                 <div class="flex gap-1">
                                     <button class="p-1.5 text-slate-400 hover:text-blue-500 btn-edit-qurban" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
                                     <button class="p-1.5 text-slate-400 hover:text-red-500 btn-delete-qurban" data-id="${m.id}"><i class="ph ph-trash"></i></button>
@@ -394,7 +398,7 @@ async function buildPengqurbanView() {
                         </span>
                     </div>
                 </div>
-                ${currentUser ? `
+                ${canEditAll() ? `
                     <button class="text-qurban-600 hover:bg-qurban-50 p-2 rounded-lg transition-colors flex items-center gap-1 text-sm font-medium btn-add-qurban" data-kel="${kambingGroup}">
                         <i class="ph ph-user-plus text-lg"></i> Tambah
                     </button>
@@ -421,7 +425,7 @@ async function buildPengqurbanView() {
                                 <div class="text-xs text-slate-500">${m.wilayah}${m.wilayah === 'Lainnya' && m.alamat ? ` - ${m.alamat}` : ''}</div>
                             </div>
                         </div>
-                        ${currentUser ? `
+                        ${canEditAll() ? `
                             <div class="flex gap-1">
                                 <button class="p-1.5 text-slate-400 hover:text-blue-500 btn-edit-qurban" data-id="${m.id}"><i class="ph ph-pencil-simple"></i></button>
                                 <button class="p-1.5 text-slate-400 hover:text-red-500 btn-delete-qurban" data-id="${m.id}"><i class="ph ph-trash"></i></button>

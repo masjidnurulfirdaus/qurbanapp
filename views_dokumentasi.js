@@ -59,7 +59,7 @@ async function buildDokumentasiView() {
                     <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 text-sm font-semibold py-2 px-4 rounded-xl transition-colors btn-lihat-dok whitespace-nowrap" data-kel="${group}">
                         Lihat
                     </button>
-                    ${currentUser ? `
+                    ${canEditDokumentasi() ? `
                         <button class="bg-qurban-700 text-white hover:bg-qurban-800 text-sm font-semibold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 btn-tambah-dok whitespace-nowrap" data-kel="${group}">
                             <i class="ph ph-plus"></i> <span class="hidden sm:inline">Tambah</span>
                         </button>
@@ -112,7 +112,7 @@ async function buildDokumentasiDetailView(kelompok) {
                 </div>
             </div>
 
-            ${currentUser ? `
+            ${canEditDokumentasi() ? `
             <div class="bg-white border border-dashed border-qurban-300 rounded-2xl p-6 text-center hover:bg-qurban-50 transition-colors cursor-pointer" id="btn-upload-area">
                 <input type="file" id="file-upload-input" accept="image/*,video/*" class="hidden">
                 <div class="w-12 h-12 rounded-full bg-qurban-100 text-qurban-600 flex items-center justify-center text-2xl mx-auto mb-3">
@@ -150,7 +150,7 @@ async function buildDokumentasiDetailView(kelompok) {
                         <img src="${doc.file_url}" alt="${doc.file_name}" class="w-full h-auto object-cover cursor-pointer img-preview" data-src="${doc.file_url}">
                     `}
                     
-                    ${currentUser ? `
+                    ${canEditDokumentasi() ? `
                     <button class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 btn-delete-file" data-id="${doc.id}">
                         <i class="ph ph-trash"></i>
                     </button>
@@ -200,8 +200,8 @@ function attachDokumentasiDetailListeners(kelompok) {
             }
 
             // Validasi ukuran (contoh 20MB)
-            if (file.size > 20 * 1024 * 1024) {
-                return showToast('Ukuran file maksimal 20MB', 'error');
+            if (file.size > 100 * 1024 * 1024) {
+                return showToast('Ukuran file maksimal 100MB', 'error');
             }
 
             // Proses Upload Cloudinary

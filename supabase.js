@@ -18,7 +18,9 @@ if (SUPABASE_URL && SUPABASE_ANON_KEY) {
 // -------------------------------------------------------------------
 const mockData = {
     pengguna: [
-        { id: 'u1', username: 'admin', nama: 'Administrator', role: 'admin' }
+        { id: 'u1', username: 'admin', nama: 'Administrator', role: 'admin' },
+        { id: 'u2', username: 'doku', nama: 'Tim Dokumentasi', role: 'dokumentasi' },
+        { id: 'u3', username: 'dist', nama: 'Tim Distribusi', role: 'distribusi' }
     ],
     pengqurban: [
         { id: '1', nama: 'Ahmad Abdullah', wilayah: 'RT 1 RW 6', alamat: '', no_telp: '081234567890', kelompok: 'Sapi Kelompok 1', status_lunas: true, created_at: new Date().toISOString() },

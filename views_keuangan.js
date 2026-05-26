@@ -46,7 +46,7 @@ async function buildKeuanganView() {
                 </div>
                 <div class="flex flex-row justify-between">
                     <h2 class="text-sm font-medium text-qurban-200 mb-1">SISA SALDO</h2>
-                    ${currentUser ? `<button id="btn-download-keuangan" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
+                    ${canEditAll() ? `<button id="btn-download-keuangan" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
                         <i class="ph ph-download-simple text-lg"></i>
                         <span>Excel</span>
                     </button>` : ''}
@@ -74,7 +74,7 @@ async function buildKeuanganView() {
             <!-- Transactions Header -->
             <div class="flex justify-between items-end mt-8 mb-2">
                 <h3 class="text-xl font-bold text-slate-800">Riwayat Transaksi</h3>
-                ${currentUser ? `
+                ${canEditAll() ? `
                     <div class="flex gap-2">
                         <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5 btn-add-transaksi">
                             <i class="ph ph-plus"></i> Transaksi
@@ -111,13 +111,13 @@ async function buildKeuanganView() {
                                 <div class="font-bold ${isIncome ? 'text-green-600' : 'text-red-500'}">
                                     ${isIncome ? '+' : '-'}${formatRupiah(t.nominal)}
                                 </div>
-                                ${currentUser && !t.is_pengqurban ? `
+                                ${canEditAll() && !t.is_pengqurban ? `
                                     <div class="flex gap-2 justify-end mt-1">
                                         <button class="text-slate-400 hover:text-blue-500 btn-edit-transaksi" data-id="${t.id}"><i class="ph ph-pencil-simple text-sm"></i></button>
                                         <button class="text-slate-400 hover:text-red-500 btn-delete-transaksi" data-id="${t.id}"><i class="ph ph-trash text-sm"></i></button>
                                     </div>
                                 ` : ''}
-                                ${currentUser && t.is_pengqurban ? `
+                                ${canEditAll() && t.is_pengqurban ? `
                                     <div class="mt-1">
                                         <span class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Otomatis dari Pengqurban</span>
                                     </div>
