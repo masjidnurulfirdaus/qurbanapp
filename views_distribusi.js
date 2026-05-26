@@ -360,8 +360,8 @@ async function buildDistribusiView() {
             html += `<div class="mt-4">
                         <h4 class="text-sm font-bold text-slate-600 mb-3">${wil}</h4>
                         <div class="space-y-3">`;
-            members.forEach(m => {
-                const distItem = distribusi.find(d => d.kelompok === 'Panitia' && d.id_penerima === m.id);
+            members.forEach(p => {
+                const distItem = distribusi.find(d => d.kelompok === 'Panitia' && d.id_penerima === p.id);
                 const isSelesai = !!distItem;
 
                 html += `
