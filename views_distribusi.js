@@ -329,7 +329,7 @@ async function buildDistribusiView() {
                                 <p class="text-[10px] text-slate-500">${m.no_telp || '-'}</p>
                             </div>
                         </div>
-                        ${currentUser ? `
+                        ${canEditDistribusi() ? `
                         <button class="btn-distribusi flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSelesai ? 'text-green-700 hover:bg-green-50' : 'bg-qurban-700 text-white hover:bg-qurban-800'}" 
                                 data-id="${m.id}" data-kelompok="Pengqurban">
                             ${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}
