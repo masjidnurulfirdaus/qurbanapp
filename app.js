@@ -402,11 +402,11 @@ async function buildPengqurbanView() {
             </div>
             <div class="p-2">
                 ${kambingMembers.length === 0 ? `<div class="p-4 text-center text-sm text-slate-400">Belum ada pengqurban kambing</div>` : ''}
-                ${kambingMembers.map(m => `
+                ${kambingMembers.map((m, index) => `
                     <div class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors group">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-medium">
-                                ${m.nama.substring(0, 2).toUpperCase()}
+                                ${index + 1}
                             </div>
                             <div>
                                 <div class="text-sm font-semibold text-slate-800 flex flex-col gap-1 mb-1">

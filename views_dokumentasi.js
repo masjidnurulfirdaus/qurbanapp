@@ -214,7 +214,7 @@ function attachDokumentasiDetailListeners(kelompok) {
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
                 const resourceType = file.type.includes('video') ? 'video' : 'image';
-                const uploadUrl = \`https://api.cloudinary.com/v1_1/\${CLOUDINARY_CLOUD_NAME}/\${resourceType}/upload\`;
+                const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
 
                 const response = await fetch(uploadUrl, {
                     method: 'POST',
@@ -226,7 +226,7 @@ function attachDokumentasiDetailListeners(kelompok) {
 
                 if (result.secure_url) {
                     let fileUrl = result.secure_url;
-                    
+
                     // Tambahkan f_auto,q_auto
                     const parts = fileUrl.split('/upload/');
                     if (parts.length === 2) {
