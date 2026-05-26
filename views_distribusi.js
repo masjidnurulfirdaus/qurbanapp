@@ -841,12 +841,50 @@ function attachDistribusiListeners() {
     if (btnDownload) {
         btnDownload.addEventListener('click', async () => {
             try {
-                const { data } = await window.api.distribusi.select();
+                const [distRes, qurbanRes, penerimaRes, panitiaRes] = await Promise.all([
+                    window.api.distribusi.select(),
+                    window.api.pengqurban.select(),
+                    window.api.penerima.select(),
+                    window.api.panitia.select()
+                ]);
+
+                const data = distRes.data;
+                const qurbans = qurbanRes.data || [];
+                const penerimas = penerimaRes.data || [];
+                const panitias = panitiaRes.data || [];
+
                 if (!data || data.length === 0) return showToast('Data kosong', 'error');
 
                 const exportData = data.map(item => {
-                    const { id, ...rest } = item;
-                    return rest;
+                    const { id, id_penerima, ...rest } = item;
+                    
+                    let nama_penerima = id_penerima || '';
+
+                    if (id_penerima) {
+                        if (item.kelompok === 'Pengqurban') {
+                            const q = qurbans.find(x => x.id === id_penerima);
+                            if (q) nama_penerima = q.nama;
+                        } else if (item.kelompok === 'Penerima') {
+                            const p = penerimas.find(x => x.id === id_penerima);
+                            if (p) nama_penerima = p.nama;
+                        } else if (item.kelompok === 'Panitia') {
+                            const p = panitias.find(x => x.id === id_penerima);
+                            if (p) nama_penerima = p.nama;
+                        }
+                    } else if (item.wilayah) {
+                        nama_penerima = item.wilayah;
+                    }
+
+                    return {
+                        'Kelompok': rest.kelompok,
+                        'Nama/Wilayah Penerima': nama_penerima,
+                        'Nama Petugas': rest.nama_petugas,
+                        'Porsi KG': rest.porsi_kg,
+                        'Porsi Sapi': rest.porsi_sapi,
+                        'Porsi Kambing': rest.porsi_kambing,
+                        'Request Khusus': rest.porsi_khusus,
+                        'Tanggal': rest.created_at ? new Date(rest.created_at).toLocaleDateString('id-ID') : ''
+                    };
                 });
 
                 const ws = XLSX.utils.json_to_sheet(exportData);
