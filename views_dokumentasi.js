@@ -16,9 +16,9 @@ async function buildDokumentasiView() {
     DOKUMENTASI_GROUPS.push(...sapiGroups);
 
     // Kelompok Kambing (kategori untuk tiap pengqurban)
-    const kambingList = pengqurbanList.filter(p => p.kelompok === 'Kambing').sort((a, b) => a.nama.localeCompare(b.nama));
-    kambingList.forEach(k => {
-        DOKUMENTASI_GROUPS.push(`Kambing - ${k.nama}`);
+    const kambingList = pengqurbanList.filter(p => p.kelompok === 'Kambing').sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
+    kambingList.forEach((k, i) => {
+        DOKUMENTASI_GROUPS.push(`Kambing ${(i + 1).toString()} - ${k.nama}`);
     });
 
     // Lainnya
