@@ -285,11 +285,19 @@ async function buildDistribusiView() {
         <div class="py-4 space-y-6 view-enter">
             <!-- Header -->
 
-            <!-- Filter Tabs -->
-            <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-                <button class="btn-filter-distribusi px-2 py-2.5 rounded-full text-sm font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
-                <button class="btn-filter-distribusi px-2 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
-                <button class="btn-filter-distribusi px-2 py-2.5 rounded-full text-sm font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
+            <!-- Filter Tabs & Actions -->
+            <div class="flex justify-between items-center pb-2">
+                <div class="flex gap-2 overflow-x-auto hide-scrollbar">
+                    <button class="btn-filter-distribusi px-3 py-2 rounded-full text-xs font-medium bg-qurban-700 text-white transition-colors whitespace-nowrap" data-filter="pengqurban">Pengqurban</button>
+                    <button class="btn-filter-distribusi px-3 py-2 rounded-full text-xs font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
+                    <button class="btn-filter-distribusi px-3 py-2 rounded-full text-xs font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
+                </div>
+                ${canEditAll() ? `
+                <button id="btn-download-distribusi" class="bg-white border border-slate-200 hover:bg-slate-50 shadow-sm text-slate-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 ml-2 whitespace-nowrap">
+                    <i class="ph ph-download-simple text-lg"></i>
+                    <span class="hidden sm:inline">Excel</span>
+                </button>
+                ` : ''}
            </div>
         </div>
 
@@ -829,6 +837,29 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
 // ATTACH LISTENERS
 // -------------------------------------------------------------------
 function attachDistribusiListeners() {
+    const btnDownload = document.getElementById('btn-download-distribusi');
+    if (btnDownload) {
+        btnDownload.addEventListener('click', async () => {
+            try {
+                const { data } = await window.api.distribusi.select();
+                if (!data || data.length === 0) return showToast('Data kosong', 'error');
+
+                const exportData = data.map(item => {
+                    const { id, ...rest } = item;
+                    return rest;
+                });
+
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Distribusi");
+
+                XLSX.writeFile(wb, "Laporan_Distribusi.xlsx");
+                showToast('Laporan berhasil diunduh!');
+            } catch (err) {
+                showToast('Gagal mengunduh laporan: ' + err.message, 'error');
+            }
+        });
+    }
     document.querySelectorAll('.btn-distribusi').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const kelompok = e.currentTarget.dataset.kelompok;
