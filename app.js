@@ -51,7 +51,7 @@ const dynamicModalContainer = document.getElementById('dynamic-modal-container')
 const toastContainer = document.getElementById('toast-container');
 
 // Utils
-const canEditAll = () => currentUser && (!currentUser.role || currentUser.role === 'admin');
+const canEditAll = () => currentUser && (currentUser.role === 'admin');
 const canEditDokumentasi = () => currentUser && (canEditAll() || currentUser.role === 'dokumentasi');
 const canEditDistribusi = () => currentUser && (canEditAll() || currentUser.role === 'distribusi');
 
