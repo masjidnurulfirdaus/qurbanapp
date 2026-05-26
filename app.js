@@ -251,7 +251,7 @@ const renderView = async (view, param = null) => {
 // 1. PENGQURBAN VIEW
 // ===================================================================
 async function buildPengqurbanView() {
-    const { data: qurbans } = await window.api.pengqurban.select().order('created_at');
+    const { data: qurbans } = await window.api.pengqurban.select();
 
     const sapiGroups = KELOMPOK_OPTIONS.filter(k => k.includes('Sapi'));
     const kambingGroup = 'Kambing';
