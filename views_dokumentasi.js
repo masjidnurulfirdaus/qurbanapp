@@ -1,30 +1,28 @@
-// URL Endpoint AppScript untuk upload/delete file
-const APPSCRIPT_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbzi1kdKKuunaB9g35wcl7T9eoLVniRKEOHEP9O7uz7bN6v0wYHZghyNLweCSXDj0tD_nQ/exec";
-
-// Utility untuk konversi file ke Base64
-const fileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Hanya ambil base64 string
-        reader.onerror = error => reject(error);
-    });
-};
-
-const DOKUMENTASI_GROUPS = [
-    "Sapi Kelompok 1",
-    "Sapi Kelompok 2",
-    "Sapi Kelompok 3",
-    "Sapi Kelompok 4",
-    "Kambing",
-    "Lainnya"
-];
+const CLOUDINARY_CLOUD_NAME = "dx7z6tddw"; // Ganti dengan cloud name Anda
+const CLOUDINARY_UPLOAD_PRESET = "hxysk86j"; // Ganti dengan upload preset Anda
 
 // ===================================================================
 // DOKUMENTASI VIEW (LIST KELOMPOK)
 // ===================================================================
 async function buildDokumentasiView() {
     const { data: dokumentasiList } = await window.api.dokumentasi.select();
+    const { data: pengqurbanList } = await window.api.pengqurban.select();
+
+    // Buat daftar kategori berdasarkan data pengqurban
+    let DOKUMENTASI_GROUPS = [];
+
+    // Kelompok Sapi (hanya yang ada anggotanya)
+    const sapiGroups = [...new Set(pengqurbanList.filter(p => p.kelompok.includes('Sapi')).map(p => p.kelompok))].sort();
+    DOKUMENTASI_GROUPS.push(...sapiGroups);
+
+    // Kelompok Kambing (kategori untuk tiap pengqurban)
+    const kambingList = pengqurbanList.filter(p => p.kelompok === 'Kambing').sort((a, b) => a.nama.localeCompare(b.nama));
+    kambingList.forEach(k => {
+        DOKUMENTASI_GROUPS.push(`Kambing - ${k.nama}`);
+    });
+
+    // Lainnya
+    DOKUMENTASI_GROUPS.push("Lainnya");
 
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
@@ -41,28 +39,28 @@ async function buildDokumentasiView() {
     DOKUMENTASI_GROUPS.forEach((group, index) => {
         const groupDocs = dokumentasiList ? dokumentasiList.filter(d => d.kelompok === group) : [];
         const isSapi = group.includes('Sapi');
-        const icon = isSapi ? 'ph-cow' : (group === 'Kambing' ? 'ph-paw-print' : 'ph-dots-three');
+        const icon = isSapi ? 'ph-cow' : (group.includes('Kambing') ? 'ph-paw-print' : 'ph-dots-three');
         const count = groupDocs.length;
 
         html += `
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-4 flex justify-between items-center hover:border-qurban-200 transition-colors">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-qurban-50 text-qurban-600 flex items-center justify-center text-2xl border border-qurban-100">
+                    <div class="w-12 h-12 rounded-full bg-qurban-50 text-qurban-600 flex items-center justify-center text-2xl border border-qurban-100 min-w-[48px]">
                         <i class="ph ${icon}"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-slate-800">${group}</h4>
-                        <span class="text-xs font-medium px-2 py-0.5 rounded-full ${count > 0 ? 'bg-qurban-50 text-qurban-600' : 'bg-slate-100 text-slate-500'}">
+                        <h4 class="font-bold text-slate-800 break-words line-clamp-2">${group}</h4>
+                        <span class="text-xs font-medium px-2 py-0.5 rounded-full inline-block mt-1 ${count > 0 ? 'bg-qurban-50 text-qurban-600' : 'bg-slate-100 text-slate-500'}">
                             ${count > 0 ? count + ' File' : 'Belum Ada'}
                         </span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 text-sm font-semibold py-2 px-4 rounded-xl transition-colors btn-lihat-dok" data-kel="${group}">
+                <div class="flex items-center gap-2 ml-2">
+                    <button class="bg-qurban-50 text-qurban-700 hover:bg-qurban-100 text-sm font-semibold py-2 px-4 rounded-xl transition-colors btn-lihat-dok whitespace-nowrap" data-kel="${group}">
                         Lihat
                     </button>
                     ${currentUser ? `
-                        <button class="bg-qurban-700 text-white hover:bg-qurban-800 text-sm font-semibold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 btn-tambah-dok" data-kel="${group}">
+                        <button class="bg-qurban-700 text-white hover:bg-qurban-800 text-sm font-semibold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 btn-tambah-dok whitespace-nowrap" data-kel="${group}">
                             <i class="ph ph-plus"></i> <span class="hidden sm:inline">Tambah</span>
                         </button>
                     ` : ''}
@@ -86,7 +84,6 @@ function attachDokumentasiListeners() {
     document.querySelectorAll('.btn-tambah-dok').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const kel = e.currentTarget.dataset.kel;
-            // Go to detail view and trigger upload
             renderView('dokumentasi_detail', kel).then(() => {
                 const addBtn = document.getElementById('btn-upload-file');
                 if (addBtn) addBtn.click();
@@ -129,13 +126,13 @@ async function buildDokumentasiDetailView(kelompok) {
             </div>
             ` : ''}
 
-            <!-- Grid Dokumentasi -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">
+            <!-- List Dokumentasi Full Width -->
+            <div class="flex flex-col gap-4 mt-6">
     `;
 
     if (groupDocs.length === 0) {
         html += `
-            <div class="col-span-2 sm:col-span-3 text-center py-10 bg-slate-50 rounded-2xl border border-slate-100">
+            <div class="text-center py-10 bg-slate-50 rounded-2xl border border-slate-100">
                 <i class="ph ph-images text-4xl text-slate-300 mb-2"></i>
                 <p class="text-slate-500 text-sm">Belum ada dokumentasi untuk ${kelompok}</p>
             </div>
@@ -143,16 +140,18 @@ async function buildDokumentasiDetailView(kelompok) {
     } else {
         groupDocs.forEach(doc => {
             const isVideo = doc.file_type && doc.file_type.includes('video');
+            const posterUrl = doc.file_url ? doc.file_url.replace(/\.[^/.]+$/, ".jpg") : '';
+
             html += `
-                <div class="relative group rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100 aspect-square">
+                <div class="relative group rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100 w-full">
                     ${isVideo ? `
-                        <iframe src="https://drive.google.com/file/d/${doc.file_id}/preview" width="640" height="360" allow="autoplay" allowfullscreen></iframe>
+                        <video src="${doc.file_url}" controls poster="${posterUrl}" class="w-full bg-black"></video>
                     ` : `
-                        <img src="${doc.file_url}" alt="${doc.file_name}" class="w-full h-full object-cover cursor-pointer img-preview" data-src="${doc.file_url}">
+                        <img src="${doc.file_url}" alt="${doc.file_name}" class="w-full h-auto object-cover cursor-pointer img-preview" data-src="${doc.file_url}">
                     `}
                     
                     ${currentUser ? `
-                    <button class="absolute top-2 left-2 bg-red-500 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 btn-delete-file" data-id="${doc.id}" data-fileid="${doc.file_id}">
+                    <button class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 btn-delete-file" data-id="${doc.id}">
                         <i class="ph ph-trash"></i>
                     </button>
                     ` : ''}
@@ -205,35 +204,40 @@ function attachDokumentasiDetailListeners(kelompok) {
                 return showToast('Ukuran file maksimal 20MB', 'error');
             }
 
-            // Proses Upload
+            // Proses Upload Cloudinary
             appContent.classList.add('opacity-50', 'pointer-events-none');
-            showToast('Mengupload file... Mohon tunggu', 'success'); // using success color for info
+            showToast('Mengupload file... Mohon tunggu', 'success');
 
             try {
-                const base64Data = await fileToBase64(file);
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-                const payload = {
-                    action: "upload",
-                    fileName: file.name,
-                    mimeType: file.type,
-                    fileData: base64Data
-                };
+                const resourceType = file.type.includes('video') ? 'video' : 'image';
+                const uploadUrl = \`https://api.cloudinary.com/v1_1/\${CLOUDINARY_CLOUD_NAME}/\${resourceType}/upload\`;
 
-                const response = await fetch(APPSCRIPT_UPLOAD_URL, {
+                const response = await fetch(uploadUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
+                    body: formData
                 });
 
                 if (!response.ok) throw new Error('Network response was not ok');
                 const result = await response.json();
 
-                if (result.status === 'success' || result.url) {
+                if (result.secure_url) {
+                    let fileUrl = result.secure_url;
+                    
+                    // Tambahkan f_auto,q_auto
+                    const parts = fileUrl.split('/upload/');
+                    if (parts.length === 2) {
+                        fileUrl = parts[0] + '/upload/f_auto,q_auto/' + parts[1];
+                    }
+
                     // Simpan ke database
                     const dbPayload = {
                         kelompok: kelompok,
-                        file_id: result.id || result.fileId || `simulated_${Date.now()}`,
-                        file_url: result.viewableUrl,
+                        file_id: result.public_id,
+                        file_url: fileUrl,
                         file_name: file.name,
                         file_type: file.type
                     };
@@ -242,12 +246,12 @@ function attachDokumentasiDetailListeners(kelompok) {
                     showToast('File berhasil diupload!');
                     renderView('dokumentasi_detail', kelompok);
                 } else {
-                    throw new Error(result.message || 'Upload gagal');
+                    throw new Error(result.error?.message || 'Upload gagal');
                 }
 
             } catch (err) {
                 console.error(err);
-                showToast('Gagal mengupload file. Pastikan URL AppScript sudah benar.', 'error');
+                showToast('Gagal mengupload file ke Cloudinary.', 'error');
             } finally {
                 appContent.classList.remove('opacity-50', 'pointer-events-none');
                 uploadInput.value = '';
@@ -260,25 +264,11 @@ function attachDokumentasiDetailListeners(kelompok) {
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const id = e.currentTarget.dataset.id;
-            const fileId = e.currentTarget.dataset.fileid;
 
             if (await showConfirm('Hapus File', 'Yakin ingin menghapus dokumentasi ini? File yang dihapus tidak bisa dikembalikan.')) {
                 appContent.classList.add('opacity-50', 'pointer-events-none');
                 try {
-                    // Panggil AppScript delete
-                    if (fileId && !fileId.startsWith('simulated_')) {
-                        const payload = {
-                            action: "delete",
-                            fileId: fileId
-                        };
-                        await fetch(APPSCRIPT_UPLOAD_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify(payload)
-                        }).catch(e => console.warn('AppScript delete fail:', e));
-                    }
-
-                    // Hapus dari db
+                    // Hapus dari db (Hanya db, tidak hapus di cloudinary untuk saat ini)
                     await window.api.dokumentasi.delete(id);
                     showToast('File terhapus');
                     renderView('dokumentasi_detail', kelompok);
@@ -322,3 +312,4 @@ function attachDokumentasiDetailListeners(kelompok) {
         });
     }
 }
+
