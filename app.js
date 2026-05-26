@@ -378,6 +378,8 @@ async function buildPengqurbanView() {
 
     // Render Kambing Group
     const kambingMembers = qurbans.filter(q => q.kelompok === kambingGroup);
+    kambingMembers.sort((a, b) => (a.created_at - b.created_at));
+
     html += `
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mt-4">
             <div class="p-4 border-b border-slate-50 flex justify-between items-center">
