@@ -251,7 +251,7 @@ const renderView = async (view, param = null) => {
 // 1. PENGQURBAN VIEW
 // ===================================================================
 async function buildPengqurbanView() {
-    const { data: qurbans } = await window.api.pengqurban.select();
+    const { data: qurbans } = await window.api.pengqurban.select().order('created_at');
 
     const sapiGroups = KELOMPOK_OPTIONS.filter(k => k.includes('Sapi'));
     const kambingGroup = 'Kambing';
@@ -605,14 +605,14 @@ function attachViewListeners(view, param = null) {
                 renderView('dokumentasi');
             });
         }
-        
+
         const btnDownload = document.getElementById('btn-download-pengqurban');
         if (btnDownload) {
             btnDownload.addEventListener('click', async () => {
                 try {
                     const { data } = await window.api.pengqurban.select();
                     if (!data || data.length === 0) return showToast('Data kosong', 'error');
-                    
+
                     // Exclude 'id' from data
                     const exportData = data.map(item => {
                         const { id, ...rest } = item;
@@ -623,11 +623,11 @@ function attachViewListeners(view, param = null) {
                     const ws = XLSX.utils.json_to_sheet(exportData);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, "Pengqurban");
-                    
+
                     // Trigger download
                     XLSX.writeFile(wb, "Laporan_Pengqurban.xlsx");
                     showToast('Laporan berhasil diunduh!');
-                } catch(err) {
+                } catch (err) {
                     showToast('Gagal mengunduh laporan: ' + err.message, 'error');
                 }
             });

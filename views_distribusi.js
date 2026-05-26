@@ -31,7 +31,7 @@ async function buildDistribusiView() {
         }
         return acc;
     }, 0);
-    kebutuhanPorsiBungkus += panitias.length;
+    kebutuhanPorsiBungkus += panitias.filter(p => p.hadir).length;
     kebutuhanPorsiBungkus += pengqurbanSapiCount * 3;
 
     // Breakdown Modal Content Generation

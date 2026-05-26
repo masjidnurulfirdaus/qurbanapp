@@ -14,7 +14,7 @@ async function buildKeuanganView() {
             if (p.setoran && p.setoran > 0) {
                 allTransactions.push({
                     id: p.id,
-                    nama_transaksi: p.kelompok === 'Kambing' ? `Upah Jagal Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
+                    nama_transaksi: p.kelompok === 'Kambing' ? `Operasioanl Qurban Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
                     tanggal: p.created_at || new Date().toISOString(),
                     jenis: 'pendapatan',
                     nominal: p.setoran,
@@ -227,7 +227,7 @@ function attachKeuanganListeners() {
                         if (p.setoran && p.setoran > 0) {
                             allTransactions.push({
                                 id: p.id,
-                                nama_transaksi: p.kelompok === 'Kambing' ? `Upah Jagal Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
+                                nama_transaksi: p.kelompok === 'Kambing' ? `Operasional Qurban Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
                                 tanggal: p.created_at || new Date().toISOString(),
                                 jenis: 'pendapatan',
                                 nominal: p.setoran,
