@@ -12,9 +12,10 @@ async function buildDistribusiView() {
     ]);
 
     const qurbans = qurbanRes.data || [];
-    const panitias = panitiaRes.data || [];
+    const semuapanitias = panitiaRes.data || [];
     const penerimas = penerimaRes.data || [];
     const distribusi = distribusiRes.data || [];
+    const panitias = semuapanitias.filter(p => p.hadir);
 
     // Calculation
     const pengqurbanSapi = qurbans.filter(q => q.kelompok.startsWith('Sapi'));
@@ -31,7 +32,7 @@ async function buildDistribusiView() {
         }
         return acc;
     }, 0);
-    kebutuhanPorsiBungkus += panitias.filter(p => p.hadir).length;
+    kebutuhanPorsiBungkus += panitias.length;
     kebutuhanPorsiBungkus += pengqurbanSapiCount * 3;
 
     // Breakdown Modal Content Generation
@@ -857,7 +858,7 @@ function attachDistribusiListeners() {
 
                 const exportData = data.map(item => {
                     const { id, id_penerima, ...rest } = item;
-                    
+
                     let nama_penerima = id_penerima || '';
 
                     if (id_penerima) {
