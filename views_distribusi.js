@@ -331,10 +331,10 @@ async function buildDistribusiView() {
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center group-card transition-all">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-cyan-50 text-cyan-600 flex items-center justify-center">
-                                <i class="ph ph-user text-xl"></i>
+                                ${i + 1}
                             </div>
                             <div>
-                                <h5 class="font-bold text-slate-800 text-sm">${(i + 1)}. ${m.nama}</h5>
+                                <h5 class="font-bold text-slate-800 text-sm">${m.nama}</h5>
                                 <p class="text-[10px] text-slate-500">${m.wilayah}${m.alamat ? `, ${m.alamat}` : ''}</p>
                                 <p class="text-[10px] text-slate-500">${m.no_telp || '-'}</p>
                             </div>
