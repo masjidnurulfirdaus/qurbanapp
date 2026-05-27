@@ -390,12 +390,12 @@ async function buildDistribusiView() {
                                 <button class="p-1.5 text-slate-400 hover:text-red-500 btn-delete-dist" data-id="${p.id}"><i class="ph ph-trash"></i></button>
                             </div>
                         ` : ''}</div>
-                        ${canEditDistribusi() ? `
-                            <button class="btn-distribusi flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSelesai ? 'text-green-700 hover:bg-green-50' : 'bg-qurban-700 text-white hover:bg-qurban-800'}" 
+                         <button class="btn-distribusi flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSelesai ? 'text-green-700 hover:bg-green-50' : 'bg-qurban-700 text-white hover:bg-qurban-800'}" 
                                     data-id="${p.id}" data-kelompok="Panitia">
-                                ${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}
-                            </button>`
-                        : ``}
+                            ${canEditDistribusi()
+                        ? `${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}`
+                        : `Lihat`}
+                        </button>
                     </div>
                 `;
             });
@@ -600,9 +600,9 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
 
                         <div class="pt-4 flex gap-3">
                             <button type="button" class="modal-close-btn flex-1 py-3 rounded-xl text-slate-600 font-medium bg-white border border-slate-200 hover:bg-slate-50 transition-colors">Batal</button>
-                            <button type="submit" class="flex-[2] bg-qurban-700 hover:bg-qurban-800 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
+                            ${canEditDistribusi ? `<button type="submit" class="flex-[2] bg-qurban-700 hover:bg-qurban-800 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
                                 Simpan Distribusi
-                            </button>
+                            </button>` : ``}
                         </div>
                     </form>
                 </div>
