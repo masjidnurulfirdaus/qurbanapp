@@ -600,7 +600,7 @@ async function showFormDistribusi(kelompok = 'Pengqurban', defaultId = null, def
 
                         <div class="pt-4 flex gap-3">
                             <button type="button" class="modal-close-btn flex-1 py-3 rounded-xl text-slate-600 font-medium bg-white border border-slate-200 hover:bg-slate-50 transition-colors">Batal</button>
-                            ${canEditDistribusi ? `<button type="submit" class="flex-[2] bg-qurban-700 hover:bg-qurban-800 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
+                            ${canEditDistribusi() ? `<button type="submit" class="flex-[2] bg-qurban-700 hover:bg-qurban-800 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
                                 Simpan Distribusi
                             </button>` : ``}
                         </div>
