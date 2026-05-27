@@ -20,6 +20,7 @@ async function buildDistribusiView() {
     // Calculation
     const pengqurbanSapi = qurbans.filter(q => q.kelompok.startsWith('Sapi'));
     const pengqurbanSapiCount = pengqurbanSapi.length;
+    const pengqurbanSapiBungkus = pengqurbanSapi.reduce((acc, p) => acc + (p.porsi_bungkus || 0), 0);
 
     // Kebutuhan Porsi KG
     let kebutuhanPorsiKg = pengqurbanSapiCount * 4;
@@ -33,7 +34,7 @@ async function buildDistribusiView() {
         return acc;
     }, 0);
     kebutuhanPorsiBungkus += panitias.length;
-    kebutuhanPorsiBungkus += pengqurbanSapiCount * 3;
+    kebutuhanPorsiBungkus += pengqurbanSapiBungkus;
 
     // Breakdown Modal Content Generation
     let porsiKgHtml = `
@@ -54,7 +55,7 @@ async function buildDistribusiView() {
     let porsiBungkusHtml = `
         <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
             <span class="text-sm font-medium text-slate-700">Pengqurban</span>
-            <span class="text-sm font-bold text-slate-800">${pengqurbanSapiCount} &times; 3 = ${pengqurbanSapiCount * 3}</span>
+            <span class="text-sm font-bold text-slate-800"> ${pengqurbanSapiBungkus}</span>
         </div>
         <div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
             <span class="text-sm font-medium text-slate-700">Panitia</span>
