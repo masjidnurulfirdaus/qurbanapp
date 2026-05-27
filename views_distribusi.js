@@ -319,10 +319,11 @@ async function buildDistribusiView() {
     KELOMPOK_OPTIONS.forEach(group => {
         const members = qurbans.filter(q => q.kelompok === group);
         if (members.length > 0) {
+            members.sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
             html += `<div class="mt-4">
                         <h4 class="text-sm font-bold text-qurban-700 mb-3">${group}</h4>
                         <div class="space-y-3">`;
-            members.forEach(m => {
+            members.forEach((m, i) => {
                 const distItem = distribusi.find(d => d.kelompok === 'Pengqurban' && d.id_penerima === m.id);
                 const isSelesai = !!distItem;
 
@@ -333,7 +334,7 @@ async function buildDistribusiView() {
                                 <i class="ph ph-user text-xl"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-slate-800 text-sm">${m.nama}</h5>
+                                <h5 class="font-bold text-slate-800 text-sm">${(i + 1)}. ${m.nama}</h5>
                                 <p class="text-[10px] text-slate-500">${m.wilayah}${m.alamat ? `, ${m.alamat}` : ''}</p>
                                 <p class="text-[10px] text-slate-500">${m.no_telp || '-'}</p>
                             </div>

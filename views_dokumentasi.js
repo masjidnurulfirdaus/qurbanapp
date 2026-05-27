@@ -114,7 +114,7 @@ async function buildDokumentasiDetailView(kelompok) {
                     <i class="ph ph-cloud-arrow-up"></i>
                 </div>
                 <h4 class="font-bold text-slate-800 mb-1">Tambah Dokumentasi</h4>
-                <p class="text-xs text-slate-500">Klik di sini untuk upload foto atau video (Max 20MB)</p>
+                <p class="text-xs text-slate-500">Klik di sini untuk upload foto atau video (Max 100MB)</p>
                 <button id="btn-upload-file" class="mt-4 bg-qurban-700 text-white font-medium py-2 px-6 rounded-xl hover:bg-qurban-800 transition-colors">
                     Pilih File
                 </button>
@@ -194,7 +194,7 @@ function attachDokumentasiDetailListeners(kelompok) {
                 return showToast('Hanya format gambar dan video yang diperbolehkan', 'error');
             }
 
-            // Validasi ukuran (contoh 20MB)
+            // Validasi ukuran (contoh 100MB)
             if (file.size > 100 * 1024 * 1024) {
                 return showToast('Ukuran file maksimal 100MB', 'error');
             }
