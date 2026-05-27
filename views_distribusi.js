@@ -344,7 +344,7 @@ async function buildDistribusiView() {
                                 data-id="${m.id}" data-kelompok="Pengqurban">
                         ${canEditDistribusi()
                         ? `${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}`
-                        : `Lihat`}
+                        : `${isSelesai ? `Lihat` : ``}`}
                         </button>
                     </div>
                 `;
@@ -394,7 +394,7 @@ async function buildDistribusiView() {
                                     data-id="${p.id}" data-kelompok="Panitia">
                             ${canEditDistribusi()
                         ? `${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}`
-                        : `Lihat`}
+                        : `${isSelesai ? `Lihat` : ``}`}
                         </button>
                     </div>
                 `;
@@ -466,7 +466,7 @@ async function buildDistribusiView() {
                                 data-id="${m.id}" data-kelompok="Penerima">
                     ${canEditDistribusi()
                     ? `${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}`
-                    : `Lihat`}
+                    : `${isSelesai ? `Lihat` : ``}`}
                     </button>
                 </div>
             `;
