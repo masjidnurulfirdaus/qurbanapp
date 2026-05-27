@@ -59,6 +59,7 @@ async function buildAbsensiView() {
         const members = byWilayah[wilayah];
 
         if (members && members.length > 0) {
+            members.sort();
             html += `
                 <div class="mt-6">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3 px-1">

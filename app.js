@@ -5,8 +5,8 @@ const PERMINTAAN_SAPI = "Daging 4 kg + 3 bungkus (sapi/kambing)";
 const PERMINTAAN_KAMBING = "Sampil + hati setengah";
 
 const WILAYAH_OPTIONS = [
-    "RT 1 RW 6", "RT 2 RW 6", "RT 3 RW 6", "RT 4 RW 6", "RT 5 RW 6", "RT 6 RW 6",
-    "RT 1 RW 7", "RT 2 RW 7", "RT 3 RW 7", "RT 4 RW 7", "RT 2 RW 12", "Lainnya"
+    "RT 1 RW 7", "RT 2 RW 7", "RT 3 RW 7", "RT 4 RW 7", "RT 1 RW 6", "RT 2 RW 6", "RT 3 RW 6", "RT 4 RW 6", "RT 5 RW 6", "RT 6 RW 6",
+    "RT 2 RW 12", "Lainnya"
 ];
 const KELOMPOK_OPTIONS = ["Sapi Kelompok 1", "Sapi Kelompok 2", "Sapi Kelompok 3", "Sapi Kelompok 4", "Kambing"];
 const TUGAS_OPTIONS = [
