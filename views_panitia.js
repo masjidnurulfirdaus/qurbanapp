@@ -37,17 +37,14 @@ async function buildPanitiaView() {
                     </div>
                     ${canEditAll() ? `
                         <div class="flex flex-col gap-2 z-10 items-end">
-                            ${canEditAll() ? `
-                            <button class="fixed bottom-24 right-6 bg-qurban-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-qurban-800 hover:-translate-y-1 transition-all" id="btn-add-panitia">
-                                <i class="ph ph-plus"></i>
+                            <button class="bg-white hover:bg-slate-100 text-qurban-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 btn-add-panitia shadow-sm">
+                                <i class="ph ph-user-plus text-lg"></i>
+                                <span>Tambah</span>
                             </button>
-                            ` : ''}
-                            ${canEditAll() ? `
                             <button id="btn-download-panitia" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1">
                                 <i class="ph ph-download-simple text-lg"></i>
                                 <span>Excel</span>
                             </button>
-                            ` : ''}
                         </div>
                     ` : ''}
                 </div>
