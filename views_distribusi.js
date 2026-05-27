@@ -437,7 +437,7 @@ async function buildDistribusiView() {
                                 data-wilayah="${wil}" data-kelompok="Penerima">
                     ${canEditDistribusi() ? `
                        ${isSelesai ? '<i class="ph-fill ph-check-circle text-lg"></i> Selesai' : 'Distribusi'}
-                    ` : 'Lihat'}
+                    ` : `${isSelesai ? 'Lihat' : ``}`}
                     </button>
                 </div>
             `;
