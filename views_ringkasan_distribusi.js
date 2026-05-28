@@ -74,12 +74,12 @@ async function buildRingkasanDistribusiView() {
             <!-- Total Card (Mockup Style) -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center justify-center gap-6 overflow-hidden relative">
                 <div class="flex items-baseline gap-1" style="color: #0369A1;">
-                    <span class="text-7xl font-black tracking-tighter">${totalKg}</span>
-                    <span class="text-xl font-bold">kg</span>
+                    <span class="text-2xl font-black tracking-tighter">${totalKg}</span>
+                    <span class="text-lg font-bold">kg</span>
                 </div>
                 <div class="flex items-baseline gap-1" style="color: #7A3E14;">
-                    <span class="text-7xl font-black tracking-tighter">${totalPorsi}</span>
-                    <span class="text-xl font-bold">porsi</span>
+                    <span class="text-2xl font-black tracking-tighter">${totalPorsi}</span>
+                    <span class="text-lg font-bold">porsi</span>
                 </div>
                 <div class="flex flex-col gap-2">
                     <div class="px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 text-sm" style="background-color: #E8F8EE; color: #166534;">
