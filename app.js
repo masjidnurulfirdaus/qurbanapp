@@ -239,7 +239,7 @@ const renderView = async (view, param = null) => {
                 case 'panitia': html = await buildPanitiaView(); break;
                 case 'absensi': html = await buildAbsensiView(); break;
                 case 'keuangan': html = await buildKeuanganView(); break;
-                case 'distribusi': html = await buildDistribusiView(); break;
+                case 'distribusi': html = await buildDetailDistribusiView(); break;
                 case 'ringkasan_distribusi': html = await buildRingkasanDistribusiView(); break;
                 case 'dokumentasi': html = await buildDokumentasiView(); break;
                 case 'dokumentasi_detail': html = await buildDokumentasiDetailView(param); break;

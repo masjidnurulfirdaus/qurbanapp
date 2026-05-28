@@ -104,7 +104,9 @@ async function buildRingkasanDistribusiView() {
                         </div>
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 mb-1 uppercase">Porsi Bungkus</p>
-                            <span class="text-lg font-bold text-slate-800">${groupPengqurban.bungkus} <span class="text-sm font-medium text-slate-500">bungkus</span></span>
+                            <div class="text-sm font-bold text-slate-800">
+                                ${groupPengqurban.sapi} 🐮 + ${groupPengqurban.kambing} 🐾 = <span class="text-lg">${groupPengqurban.bungkus}</span> <span class="text-xs font-medium text-slate-500">bungkus</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -124,7 +126,9 @@ async function buildRingkasanDistribusiView() {
                         </div>
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 mb-1 uppercase">Porsi Bungkus</p>
-                            <span class="text-lg font-bold text-slate-800">${groupPanitia.bungkus} <span class="text-sm font-medium text-slate-500">bungkus</span></span>
+                            <div class="text-sm font-bold text-slate-800">
+                                ${groupPanitia.sapi} 🐮 + ${groupPanitia.kambing} 🐾 = <span class="text-lg">${groupPanitia.bungkus}</span> <span class="text-xs font-medium text-slate-500">bungkus</span>
+                            </div>
                         </div>
                     </div>
                 </div>
