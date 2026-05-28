@@ -294,12 +294,18 @@ async function buildDistribusiView() {
                     <button class="btn-filter-distribusi px-3 py-2 rounded-full text-xs font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="panitia">Panitia</button>
                     <button class="btn-filter-distribusi px-3 py-2 rounded-full text-xs font-medium bg-sky-100 text-slate-700 transition-colors whitespace-nowrap" data-filter="penerima">Penerima</button>
                 </div>
-                ${canEditAll() ? `
-                <button id="btn-download-distribusi" class="bg-white border border-slate-200 hover:bg-slate-50 shadow-sm text-slate-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 ml-2 whitespace-nowrap">
-                    <i class="ph ph-download-simple text-lg"></i>
-                    <span class="hidden sm:inline">Excel</span>
-                </button>
-                ` : ''}
+                <div class="flex items-center gap-2 ml-2">
+                    <button id="btn-ringkasan-distribusi" class="bg-qurban-50 border border-qurban-100 text-qurban-700 hover:bg-qurban-100 shadow-sm text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
+                        <i class="ph ph-chart-pie-slice text-lg"></i>
+                        <span class="hidden sm:inline">Ringkasan</span>
+                    </button>
+                    ${canEditAll() ? `
+                    <button id="btn-download-distribusi" class="bg-white border border-slate-200 hover:bg-slate-50 shadow-sm text-slate-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
+                        <i class="ph ph-download-simple text-lg"></i>
+                        <span class="hidden sm:inline">Excel</span>
+                    </button>
+                    ` : ''}
+                </div>
            </div>
         </div>
 
@@ -901,12 +907,36 @@ function attachDistribusiListeners() {
             }
         });
     }
+
+    const btnRingkasan = document.getElementById('btn-ringkasan-distribusi');
+    if (btnRingkasan) {
+        btnRingkasan.addEventListener('click', () => {
+            renderView('ringkasan_distribusi');
+        });
+    }
+
     document.querySelectorAll('.btn-distribusi').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const kelompok = e.currentTarget.dataset.kelompok;
             const id = e.currentTarget.dataset.id || null;
             const wilayah = e.currentTarget.dataset.wilayah || null;
             showFormDistribusi(kelompok, id, wilayah);
+        });
+    });
+
+    document.querySelectorAll('.btn-delete-dist').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const id = e.currentTarget.dataset.id;
+            if (await showConfirm('Hapus Data', 'Yakin ingin menghapus data ini?')) {
+                try {
+                    await window.api.distribusi.delete(id);
+                    showToast('Data terhapus');
+                    renderView('distribusi');
+                } catch (err) {
+                    showToast('Gagal menghapus: ' + err.message, 'error');
+                }
+            }
         });
     });
 

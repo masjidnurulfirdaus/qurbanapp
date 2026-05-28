@@ -240,6 +240,7 @@ const renderView = async (view, param = null) => {
                 case 'absensi': html = await buildAbsensiView(); break;
                 case 'keuangan': html = await buildKeuanganView(); break;
                 case 'distribusi': html = await buildDistribusiView(); break;
+                case 'ringkasan_distribusi': html = await buildRingkasanDistribusiView(); break;
                 case 'dokumentasi': html = await buildDokumentasiView(); break;
                 case 'dokumentasi_detail': html = await buildDokumentasiDetailView(param); break;
             }
@@ -669,6 +670,8 @@ function attachViewListeners(view, param = null) {
         attachKeuanganListeners();
     } else if (view === 'distribusi' && typeof attachDistribusiListeners === 'function') {
         attachDistribusiListeners();
+    } else if (view === 'ringkasan_distribusi' && typeof attachRingkasanDistribusiListeners === 'function') {
+        attachRingkasanDistribusiListeners();
     } else if (view === 'dokumentasi' && typeof attachDokumentasiListeners === 'function') {
         attachDokumentasiListeners();
     } else if (view === 'dokumentasi_detail' && typeof attachDokumentasiDetailListeners === 'function') {
