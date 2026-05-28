@@ -13,6 +13,7 @@ async function buildRingkasanDistribusiView() {
     let totalSapi = 0;
     let totalKambing = 0;
     let totalPorsi = 0;
+    let totalKg = 0;
 
     let groupPengqurban = { kg: 0, sapi: 0, kambing: 0, bungkus: 0 };
     let groupPanitia = { kg: 0, sapi: 0, kambing: 0, bungkus: 0 };
@@ -28,6 +29,7 @@ async function buildRingkasanDistribusiView() {
         totalSapi += sapi;
         totalKambing += kambing;
         totalPorsi += bungkus;
+        totalKg += kg;
 
         if (d.kelompok === 'Pengqurban') {
             groupPengqurban.kg += kg;
@@ -81,6 +83,9 @@ async function buildRingkasanDistribusiView() {
                     </div>
                     <div class="px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 text-sm" style="background-color: #FEF0E6; color: #9C4318;">
                         <i class="ph ph-paw-print text-lg"></i> KAMBING: ${totalKambing}
+                    </div>
+                    <div class="px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 text-sm" style="background-color: #E0F2FE; color: #0369A1;">
+                        <i class="ph ph-scales text-lg"></i> DAGING: ${totalKg} kg
                     </div>
                 </div>
             </div>
@@ -146,16 +151,20 @@ async function buildRingkasanDistribusiView() {
                     <div class="space-y-3">
                         ${Object.keys(groupPenerimaWilayah).length === 0 && groupPenerimaLainnya.length === 0 ? '<p class="text-sm text-slate-500">Belum ada distribusi ke penerima.</p>' : ''}
                         
-                        ${Object.keys(groupPenerimaWilayah).sort().map(wil => {
-                            const data = groupPenerimaWilayah[wil];
-                            let mainText = [
-                                data.bungkus > 0 ? `${data.bungkus} bungkus` : '',
-                                data.kg > 0 ? `${data.kg} kg` : ''
-                            ].filter(Boolean).join(' &bull; ');
+                        ${Object.keys(groupPenerimaWilayah).sort((a, b) => {
+        let indexA = WILAYAH_OPTIONS.indexOf(a);
+        let indexB = WILAYAH_OPTIONS.indexOf(b);
+        return indexA - indexB;
+    }).map(wil => {
+        const data = groupPenerimaWilayah[wil];
+        let mainText = [
+            data.bungkus > 0 ? `${data.bungkus} bungkus` : '',
+            data.kg > 0 ? `${data.kg} kg` : ''
+        ].filter(Boolean).join(' &bull; ');
 
-                            let breakdown = data.bungkus > 0 ? `<div class="text-[10px] font-medium text-slate-500 mt-0.5">${data.sapi} sapi &bull; ${data.kambing} kambing</div>` : '';
-                            
-                            return `
+        let breakdown = data.bungkus > 0 ? `<div class="text-[10px] font-medium text-slate-500 mt-0.5">${data.sapi} sapi &bull; ${data.kambing} kambing</div>` : '';
+
+        return `
                             <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                                 <span class="text-sm font-semibold text-slate-700">${wil}</span>
                                 <div class="text-right flex flex-col items-end">
@@ -164,17 +173,17 @@ async function buildRingkasanDistribusiView() {
                                 </div>
                             </div>
                             `;
-                        }).join('')}
+    }).join('')}
 
                         ${groupPenerimaLainnya.map(item => {
-                            let mainText = [
-                                item.bungkus > 0 ? `${item.bungkus} bungkus` : '',
-                                item.kg > 0 ? `${item.kg} kg` : ''
-                            ].filter(Boolean).join(' &bull; ');
+        let mainText = [
+            item.bungkus > 0 ? `${item.bungkus} bungkus` : '',
+            item.kg > 0 ? `${item.kg} kg` : ''
+        ].filter(Boolean).join(' &bull; ');
 
-                            let breakdown = item.bungkus > 0 ? `<div class="text-[10px] font-medium text-slate-500 mt-0.5">${item.sapi} sapi &bull; ${item.kambing} kambing</div>` : '';
-                            
-                            return `
+        let breakdown = item.bungkus > 0 ? `<div class="text-[10px] font-medium text-slate-500 mt-0.5">${item.sapi} sapi &bull; ${item.kambing} kambing</div>` : '';
+
+        return `
                             <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                                 <span class="text-sm font-semibold text-slate-700">${item.name}</span>
                                 <div class="text-right flex flex-col items-end">
@@ -183,7 +192,7 @@ async function buildRingkasanDistribusiView() {
                                 </div>
                             </div>
                             `;
-                        }).join('')}
+    }).join('')}
                     </div>
                 </div>
 
