@@ -61,11 +61,12 @@ async function buildRingkasanDistribusiView() {
 
     let html = `
         <div class="p-4 space-y-6 pb-24 view-enter">
-            <div class="flex items-center gap-3 mb-4">
-                <button id="btn-back-distribusi" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors">
-                    <i class="ph ph-arrow-left text-xl"></i>
-                </button>
+            <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-slate-800">Ringkasan Distribusi</h2>
+                <button id="btn-detail-distribusi" class="bg-qurban-50 border border-qurban-100 text-qurban-700 hover:bg-qurban-100 shadow-sm text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
+                    <i class="ph ph-list-dashes text-lg"></i>
+                    <span>Detail Distribusi</span>
+                </button>
             </div>
 
             <!-- Total Card (Mockup Style) -->
@@ -139,23 +140,42 @@ async function buildRingkasanDistribusiView() {
                     <div class="space-y-3">
                         ${Object.keys(groupPenerimaWilayah).length === 0 && groupPenerimaLainnya.length === 0 ? '<p class="text-sm text-slate-500">Belum ada distribusi ke penerima.</p>' : ''}
                         
-                        ${Object.keys(groupPenerimaWilayah).sort().map(wil => `
+                        ${Object.keys(groupPenerimaWilayah).sort().map(wil => {
+                            const data = groupPenerimaWilayah[wil];
+                            let bungkusText = '';
+                            if (data.bungkus > 0) {
+                                bungkusText = `${data.sapi} 🐮 + ${data.kambing} 🐾 = ${data.bungkus} bungkus`;
+                            }
+                            let kgText = data.kg > 0 ? `${data.kg} kg` : '';
+                            let combined = [bungkusText, kgText].filter(Boolean).join(' &bull; ');
+                            
+                            return `
                             <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                                 <span class="text-sm font-semibold text-slate-700">${wil}</span>
                                 <div class="text-right">
-                                    <div class="text-sm font-bold text-slate-800">${groupPenerimaWilayah[wil].bungkus > 0 ? groupPenerimaWilayah[wil].bungkus + ' bungkus' : ''}${groupPenerimaWilayah[wil].bungkus > 0 && groupPenerimaWilayah[wil].kg > 0 ? ' &bull; ' : ''}${groupPenerimaWilayah[wil].kg > 0 ? groupPenerimaWilayah[wil].kg + ' kg' : ''}</div>
+                                    <div class="text-sm font-bold text-slate-800">${combined}</div>
                                 </div>
                             </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
 
-                        ${groupPenerimaLainnya.map(item => `
+                        ${groupPenerimaLainnya.map(item => {
+                            let bungkusText = '';
+                            if (item.bungkus > 0) {
+                                bungkusText = `${item.sapi} 🐮 + ${item.kambing} 🐾 = ${item.bungkus} bungkus`;
+                            }
+                            let kgText = item.kg > 0 ? `${item.kg} kg` : '';
+                            let combined = [bungkusText, kgText].filter(Boolean).join(' &bull; ');
+                            
+                            return `
                             <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                                 <span class="text-sm font-semibold text-slate-700">${item.name}</span>
                                 <div class="text-right">
-                                    <div class="text-sm font-bold text-slate-800">${item.bungkus > 0 ? item.bungkus + ' bungkus' : ''}${item.bungkus > 0 && item.kg > 0 ? ' &bull; ' : ''}${item.kg > 0 ? item.kg + ' kg' : ''}</div>
+                                    <div class="text-sm font-bold text-slate-800">${combined}</div>
                                 </div>
                             </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 </div>
 
@@ -167,9 +187,9 @@ async function buildRingkasanDistribusiView() {
 }
 
 function attachRingkasanDistribusiListeners() {
-    const btnBack = document.getElementById('btn-back-distribusi');
-    if (btnBack) {
-        btnBack.addEventListener('click', () => {
+    const btnDetail = document.getElementById('btn-detail-distribusi');
+    if (btnDetail) {
+        btnDetail.addEventListener('click', () => {
             renderView('distribusi');
         });
     }

@@ -1,8 +1,8 @@
 // ===================================================================
-// DISTRIBUSI VIEW
+// DETAIL DISTRIBUSI VIEW
 // ===================================================================
 
-async function buildDistribusiView() {
+async function buildDetailDistribusiView() {
     // Fetch all needed data
     const [qurbanRes, panitiaRes, penerimaRes, distribusiRes] = await Promise.all([
         window.api.pengqurban.select(),
@@ -296,8 +296,8 @@ async function buildDistribusiView() {
                 </div>
                 <div class="flex items-center gap-2 ml-2">
                     <button id="btn-ringkasan-distribusi" class="bg-qurban-50 border border-qurban-100 text-qurban-700 hover:bg-qurban-100 shadow-sm text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
-                        <i class="ph ph-chart-pie-slice text-lg"></i>
-                        <span class="hidden sm:inline">Ringkasan</span>
+                        <i class="ph ph-arrow-left text-lg"></i>
+                        <span class="hidden sm:inline">Kembali</span>
                     </button>
                     ${canEditAll() ? `
                     <button id="btn-download-distribusi" class="bg-white border border-slate-200 hover:bg-slate-50 shadow-sm text-slate-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
