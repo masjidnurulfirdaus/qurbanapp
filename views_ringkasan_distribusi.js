@@ -104,8 +104,9 @@ async function buildRingkasanDistribusiView() {
                         </div>
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 mb-1 uppercase">Porsi Bungkus</p>
-                            <div class="text-sm font-bold text-slate-800">
-                                ${groupPengqurban.sapi} 🐮 + ${groupPengqurban.kambing} 🐾 = <span class="text-lg">${groupPengqurban.bungkus}</span> <span class="text-xs font-medium text-slate-500">bungkus</span>
+                            <div class="flex flex-col">
+                                <span class="text-lg font-bold text-slate-800">${groupPengqurban.bungkus} <span class="text-sm font-medium text-slate-500">bungkus</span></span>
+                                ${groupPengqurban.bungkus > 0 ? `<span class="text-[10px] font-medium text-slate-500">${groupPengqurban.sapi} sapi &bull; ${groupPengqurban.kambing} kambing</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -126,8 +127,9 @@ async function buildRingkasanDistribusiView() {
                         </div>
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 mb-1 uppercase">Porsi Bungkus</p>
-                            <div class="text-sm font-bold text-slate-800">
-                                ${groupPanitia.sapi} 🐮 + ${groupPanitia.kambing} 🐾 = <span class="text-lg">${groupPanitia.bungkus}</span> <span class="text-xs font-medium text-slate-500">bungkus</span>
+                            <div class="flex flex-col">
+                                <span class="text-lg font-bold text-slate-800">${groupPanitia.bungkus} <span class="text-sm font-medium text-slate-500">bungkus</span></span>
+                                ${groupPanitia.bungkus > 0 ? `<span class="text-[10px] font-medium text-slate-500">${groupPanitia.sapi} sapi &bull; ${groupPanitia.kambing} kambing</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -146,36 +148,38 @@ async function buildRingkasanDistribusiView() {
                         
                         ${Object.keys(groupPenerimaWilayah).sort().map(wil => {
                             const data = groupPenerimaWilayah[wil];
-                            let bungkusText = '';
-                            if (data.bungkus > 0) {
-                                bungkusText = `${data.sapi} 🐮 + ${data.kambing} 🐾 = ${data.bungkus} bungkus`;
-                            }
-                            let kgText = data.kg > 0 ? `${data.kg} kg` : '';
-                            let combined = [bungkusText, kgText].filter(Boolean).join(' &bull; ');
+                            let mainText = [
+                                data.bungkus > 0 ? `${data.bungkus} bungkus` : '',
+                                data.kg > 0 ? `${data.kg} kg` : ''
+                            ].filter(Boolean).join(' &bull; ');
+
+                            let breakdown = data.bungkus > 0 ? `<div class="text-[10px] font-medium text-slate-500 mt-0.5">${data.sapi} sapi &bull; ${data.kambing} kambing</div>` : '';
                             
                             return `
                             <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                                 <span class="text-sm font-semibold text-slate-700">${wil}</span>
-                                <div class="text-right">
-                                    <div class="text-sm font-bold text-slate-800">${combined}</div>
+                                <div class="text-right flex flex-col items-end">
+                                    <div class="text-sm font-bold text-slate-800">${mainText}</div>
+                                    ${breakdown}
                                 </div>
                             </div>
                             `;
                         }).join('')}
 
                         ${groupPenerimaLainnya.map(item => {
-                            let bungkusText = '';
-                            if (item.bungkus > 0) {
-                                bungkusText = `${item.sapi} 🐮 + ${item.kambing} 🐾 = ${item.bungkus} bungkus`;
-                            }
-                            let kgText = item.kg > 0 ? `${item.kg} kg` : '';
-                            let combined = [bungkusText, kgText].filter(Boolean).join(' &bull; ');
+                            let mainText = [
+                                item.bungkus > 0 ? `${item.bungkus} bungkus` : '',
+                                item.kg > 0 ? `${item.kg} kg` : ''
+                            ].filter(Boolean).join(' &bull; ');
+
+                            let breakdown = item.bungkus > 0 ? `<div class="text-[10px] font-medium text-slate-500 mt-0.5">${item.sapi} sapi &bull; ${item.kambing} kambing</div>` : '';
                             
                             return `
                             <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                                 <span class="text-sm font-semibold text-slate-700">${item.name}</span>
-                                <div class="text-right">
-                                    <div class="text-sm font-bold text-slate-800">${combined}</div>
+                                <div class="text-right flex flex-col items-end">
+                                    <div class="text-sm font-bold text-slate-800">${mainText}</div>
+                                    ${breakdown}
                                 </div>
                             </div>
                             `;
