@@ -26,7 +26,7 @@ async function buildKeuanganView() {
         const totalPengqurbanSapi = pengqurbans.filter(p => p.kelompok !== 'Kambing').length;
         allTransactions.push({
             id: generateId,
-            nama_transaksi: `Setoran Qurban Kambing`,
+            nama_transaksi: `Setoran Qurban Kambing - ${totalPengqurbanKambing} * 75000`,
             tanggal: new Date('2026-05-27').toISOString(),
             jenis: 'pendapatan',
             nominal: (totalPengqurbanKambing * 75000),
@@ -34,7 +34,7 @@ async function buildKeuanganView() {
         });
         allTransactions.push({
             id: generateId,
-            nama_transaksi: `Setoran Qurban Sapi`,
+            nama_transaksi: `Setoran Qurban Sapi - ${totalPengqurbanSapi} * 3500000`,
             tanggal: new Date('2026-05-20').toISOString(),
             jenis: 'pendapatan',
             nominal: (totalPengqurbanSapi * 3500000),
