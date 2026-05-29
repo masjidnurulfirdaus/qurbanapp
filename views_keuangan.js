@@ -25,7 +25,7 @@ async function buildKeuanganView() {
         const totalPengqurbanKambing = pengqurbans.filter(p => p.kelompok === 'Kambing').length;
         const totalPengqurbanSapi = pengqurbans.filter(p => p.kelompok !== 'Kambing').length;
         allTransactions.push({
-            id: generateId,
+            id: generateId(),
             nama_transaksi: `Setoran Qurban Kambing - ${totalPengqurbanKambing} * 75000`,
             tanggal: new Date('2026-05-27').toISOString(),
             jenis: 'pendapatan',
@@ -33,7 +33,7 @@ async function buildKeuanganView() {
             is_pengqurban: true
         });
         allTransactions.push({
-            id: generateId,
+            id: generateId(),
             nama_transaksi: `Setoran Qurban Sapi - ${totalPengqurbanSapi} * 3500000`,
             tanggal: new Date('2026-05-20').toISOString(),
             jenis: 'pendapatan',
@@ -241,17 +241,33 @@ function attachKeuanganListeners() {
                 const allTransactions = [...(transaksis || [])];
 
                 if (pengqurbans) {
-                    pengqurbans.forEach(p => {
-                        if (p.setoran && p.setoran > 0) {
-                            allTransactions.push({
-                                id: p.id,
-                                nama_transaksi: p.kelompok === 'Kambing' ? `Operasional Qurban Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
-                                tanggal: p.created_at || new Date().toISOString(),
-                                jenis: 'pendapatan',
-                                nominal: p.setoran,
-                                is_pengqurban: true
-                            });
-                        }
+                    // pengqurbans.forEach(p => {
+                    //     if (p.setoran && p.setoran > 0) {
+                    //         allTransactions.push({
+                    //             id: p.id,
+                    //             nama_transaksi: p.kelompok === 'Kambing' ? `Operasional Qurban Kambing - ${p.nama}` : `Setoran Qurban - ${p.nama}`,
+                    //             tanggal: p.created_at || new Date().toISOString(),
+                    //             jenis: 'pendapatan',
+                    //             nominal: p.setoran,
+                    //             is_pengqurban: true
+                    //         });
+                    //     }
+                    // });
+                    allTransactions.push({
+                        id: generateId(),
+                        nama_transaksi: `Setoran Qurban Kambing - ${totalPengqurbanKambing} * 75000`,
+                        tanggal: new Date('2026-05-27').toISOString(),
+                        jenis: 'pendapatan',
+                        nominal: (totalPengqurbanKambing * 75000),
+                        is_pengqurban: true
+                    });
+                    allTransactions.push({
+                        id: generateId(),
+                        nama_transaksi: `Setoran Qurban Sapi - ${totalPengqurbanSapi} * 3500000`,
+                        tanggal: new Date('2026-05-20').toISOString(),
+                        jenis: 'pendapatan',
+                        nominal: (totalPengqurbanSapi * 3500000),
+                        is_pengqurban: true
                     });
                 }
 
