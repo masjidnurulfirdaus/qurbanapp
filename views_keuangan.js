@@ -253,6 +253,8 @@ function attachKeuanganListeners() {
                     //         });
                     //     }
                     // });
+                    const totalPengqurbanKambing = pengqurbans.filter(p => p.kelompok === 'Kambing').length;
+                    const totalPengqurbanSapi = pengqurbans.filter(p => p.kelompok !== 'Kambing').length;
                     allTransactions.push({
                         id: generateId(),
                         nama_transaksi: `Setoran Qurban Kambing - ${totalPengqurbanKambing} * 75000`,
