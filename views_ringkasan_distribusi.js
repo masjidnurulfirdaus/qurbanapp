@@ -65,10 +65,18 @@ async function buildRingkasanDistribusiView() {
         <div class="p-4 space-y-6 pb-24 view-enter">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-slate-800">Ringkasan Distribusi</h2>
-                <button id="btn-detail-distribusi" class="bg-qurban-50 border border-qurban-100 text-qurban-700 hover:bg-qurban-100 shadow-sm text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
-                    <i class="ph ph-list-dashes text-lg"></i>
-                    <span>Detail Distribusi</span>
-                </button>
+                <div class="flex items-center gap-2">
+                    ${canEditAll() ? `
+                    <button id="btn-download-excel-ringkasan" class="bg-emerald-50 border border-emerald-100 text-emerald-700 hover:bg-emerald-100 shadow-sm text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
+                        <i class="ph ph-file-xls text-lg"></i>
+                        <span>Excel</span>
+                    </button>
+                    ` : ''}
+                    <button id="btn-detail-distribusi" class="bg-qurban-50 border border-qurban-100 text-qurban-700 hover:bg-qurban-100 shadow-sm text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center gap-1 whitespace-nowrap">
+                        <i class="ph ph-list-dashes text-lg"></i>
+                        <span>Detail Distribusi</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Total Card (Mockup Style) -->
@@ -209,6 +217,122 @@ function attachRingkasanDistribusiListeners() {
     if (btnDetail) {
         btnDetail.addEventListener('click', () => {
             renderView('distribusi');
+        });
+    }
+
+    const btnDownload = document.getElementById('btn-download-excel-ringkasan');
+    if (btnDownload) {
+        btnDownload.addEventListener('click', async () => {
+            try {
+                const [penerimaRes, distribusiRes] = await Promise.all([
+                    window.api.penerima.select(),
+                    window.api.distribusi.select()
+                ]);
+                const penerimas = penerimaRes.data || [];
+                const distribusi = distribusiRes.data || [];
+
+                let totalSapi = 0;
+                let totalKambing = 0;
+                let totalPorsi = 0;
+                let totalKg = 0;
+
+                let groupPengqurban = { kg: 0, sapi: 0, kambing: 0, bungkus: 0 };
+                let groupPanitia = { kg: 0, sapi: 0, kambing: 0, bungkus: 0 };
+                let groupPenerimaWilayah = {};
+                let groupPenerimaLainnya = [];
+
+                distribusi.forEach(d => {
+                    const kg = parseInt(d.porsi_kg) || 0;
+                    const sapi = parseInt(d.porsi_sapi) || 0;
+                    const kambing = parseInt(d.porsi_kambing) || 0;
+                    const bungkus = sapi + kambing;
+
+                    totalSapi += sapi;
+                    totalKambing += kambing;
+                    totalPorsi += bungkus;
+                    totalKg += kg;
+
+                    if (d.kelompok === 'Pengqurban') {
+                        groupPengqurban.kg += kg;
+                        groupPengqurban.sapi += sapi;
+                        groupPengqurban.kambing += kambing;
+                        groupPengqurban.bungkus += bungkus;
+                    } else if (d.kelompok === 'Panitia') {
+                        groupPanitia.kg += kg;
+                        groupPanitia.sapi += sapi;
+                        groupPanitia.kambing += kambing;
+                        groupPanitia.bungkus += bungkus;
+                    } else if (d.kelompok === 'Penerima') {
+                        if (d.wilayah !== 'Lainnya') {
+                            if (!groupPenerimaWilayah[d.wilayah]) {
+                                groupPenerimaWilayah[d.wilayah] = { kg: 0, sapi: 0, kambing: 0, bungkus: 0 };
+                            }
+                            groupPenerimaWilayah[d.wilayah].kg += kg;
+                            groupPenerimaWilayah[d.wilayah].sapi += sapi;
+                            groupPenerimaWilayah[d.wilayah].kambing += kambing;
+                            groupPenerimaWilayah[d.wilayah].bungkus += bungkus;
+                        } else {
+                            let name = 'Lainnya';
+                            if (d.id_penerima) {
+                                const pn = penerimas.find(p => p.id === d.id_penerima);
+                                if (pn) name = pn.nama;
+                            }
+                            groupPenerimaLainnya.push({ name, kg, sapi, kambing, bungkus });
+                        }
+                    }
+                });
+
+                // Generate AOA (Array of Arrays) for SheetJS
+                const aoa = [
+                    ["RINGKASAN DISTRIBUSI QURBAN"],
+                    ["Masjid Nurul Firdaus"],
+                    ["Tanggal Unduh", new Date().toLocaleString('id-ID')],
+                    [],
+                    ["TOTAL DISTRIBUSI"],
+                    ["Porsi Daging (KG)", "Total Porsi (Bungkus)", "Daging Sapi (Bungkus)", "Daging Kambing (Bungkus)"],
+                    [totalKg, totalPorsi, totalSapi, totalKambing],
+                    [],
+                    ["RINCIAN PER KELOMPOK"],
+                    ["Kelompok / Penerima", "Porsi Daging (KG)", "Porsi Bungkus (Total)", "Daging Sapi (Bungkus)", "Daging Kambing (Bungkus)"],
+                    ["Pengqurban", groupPengqurban.kg, groupPengqurban.bungkus, groupPengqurban.sapi, groupPengqurban.kambing],
+                    ["Panitia", groupPanitia.kg, groupPanitia.bungkus, groupPanitia.sapi, groupPanitia.kambing]
+                ];
+
+                // Append Penerima Wilayah sorted
+                Object.keys(groupPenerimaWilayah).sort((a, b) => {
+                    let indexA = WILAYAH_OPTIONS.indexOf(a);
+                    let indexB = WILAYAH_OPTIONS.indexOf(b);
+                    return indexA - indexB;
+                }).forEach(wil => {
+                    const data = groupPenerimaWilayah[wil];
+                    aoa.push([
+                        `Penerima (${wil})`,
+                        data.kg,
+                        data.bungkus,
+                        data.sapi,
+                        data.kambing
+                    ]);
+                });
+
+                // Append Penerima Lainnya
+                groupPenerimaLainnya.forEach(item => {
+                    aoa.push([
+                        `Penerima (${item.name})`,
+                        item.kg,
+                        item.bungkus,
+                        item.sapi,
+                        item.kambing
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Ringkasan");
+                XLSX.writeFile(wb, "Ringkasan_Distribusi_Qurban.xlsx");
+                showToast('Laporan ringkasan berhasil diunduh!');
+            } catch (err) {
+                showToast('Gagal mengunduh laporan: ' + err.message, 'error');
+            }
         });
     }
 }
