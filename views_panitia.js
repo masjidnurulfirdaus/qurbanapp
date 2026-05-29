@@ -16,6 +16,9 @@ async function buildPanitiaView() {
     const relawanCount = currentPanitiasData.filter(p => p.tugas.includes('Relawan')).length;
     const panitiaCount = activeCount - relawanCount;
 
+    const relawanHadirCount = currentPanitiasData.filter(p => p.hadir && p.tugas.includes('Relawan')).length;
+    const panitiaHadirCount = currentPanitiasData.filter(p => p.hadir && !p.tugas.includes('Relawan')).length;
+
     let html = `
         <div class="p-4 space-y-4 pb-24 view-enter">
             <!-- Header -->
@@ -31,8 +34,8 @@ async function buildPanitiaView() {
                             <span class="text-sm">Orang</span>
                         </div>
                         <div class="flex gap-2">
-                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${panitiaCount} Panita</span>
-                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${relawanCount} Relawan</span>
+                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${panitiaCount} Panitia (${panitiaHadirCount} Hadir)</span>
+                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded-md backdrop-blur-sm">${relawanCount} Relawan (${relawanHadirCount} Hadir)</span>
                         </div>
                     </div>
                     ${canEditAll() ? `
